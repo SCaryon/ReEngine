@@ -1,0 +1,19 @@
+{{define "index.html"}}
+
+    {{template "header" .}}
+    <div style="
+    text-align: center;
+    outline-style: none ;
+    border-radius: 3px;
+    padding: 7px 0px;
+    height: 50px;
+    width: 100%;
+    ">
+        <img hidefocus="true" id="s_lg_img_new" class="index-logo-srcnew" src="//www.baidu.com/img/bd_logo1.png" width="270" height="129" onerror="this.src='//www.baidu.com/img/bd_logo1.png';this.onerror=null;" usemap="#mp">
+        <form action="/s" style="height: 100%;">
+        <input style="height: 40px;width: 600px;font-size: large;" type="text" name="context">
+        <input style="height: 46px;padding-left: 0px;border-left: 0px;font-size: larger;background: #3385ff;color: white" type="submit" value="搜索一下">
+        </form></div>
+    {{template "footer" }}
+
+{{end}}
