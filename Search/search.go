@@ -11,18 +11,19 @@ func Search(context string) []int{
 	// 分词
 	tmpSegments := utils.Segmenter.Segment([]byte(context))
 	seg := sego.SegmentsToSlice(tmpSegments, true)
+	log.Printf("%v",seg)
 	// 连接数据库
-	db := utils.InitDB(utils.DBInvertDoc)
+	db := utils.InitDB()
 	if db == nil {
 		log.Println("connect db failed")
 		return nil
 	}
-
+	// todo 去除停用词
 	var docId = make(map[int]bool)
 	for _,tmp := range seg {
 		queryStr := fmt.Sprintf("select id,doc_id from %s where key_word=%s\n",utils.DBInvertDoc,tmp)
 		rows,err := db.Query(queryStr)
-		if err == nil {
+		if err == nil || rows == nil {
 			log.Printf("use %s table ,query = %s failed\n",utils.DBInvertDoc,tmp)
 			continue
 		}
@@ -41,6 +42,7 @@ func Search(context string) []int{
 			}
 		}
 	}
+	db.Close()
 	var result []int
 	for key,_ := range docId {
 		result = append(result, key)

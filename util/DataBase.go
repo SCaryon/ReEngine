@@ -13,10 +13,11 @@ const (
 	password = "19971117liu"
 	ip = "127.0.0.1"
 	port = "3306"
+	dbName = "ReEngine"
 )
 
 
-func InitDB(dbName string) *sql.DB {
+func InitDB() *sql.DB {
 	//构建连接："用户名:密码@tcp(IP:端口)/数据库?charset=utf8"
 	path := strings.Join([]string{userName, ":", password, "@tcp(",ip, ":", port, ")/", dbName, "?charset=utf8"}, "")
 	db, err := sql.Open("mysql", path)
@@ -32,7 +33,7 @@ func InitDB(dbName string) *sql.DB {
 	db.SetMaxIdleConns(10)
 	//验证连接
 	if err := db.Ping(); err != nil{
-		log.Println("opon database fail")
+		log.Printf("open database fail,%v\n",err)
 		return nil
 	}
 	log.Println("connnect success")

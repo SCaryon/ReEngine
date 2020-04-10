@@ -24,6 +24,7 @@ func InitRoutes(r *gin.Engine) {
 			log.Println("search context:%s",context)
 			// 查找倒排索引
 			docId := Search.Search(context)
+			_ = docId
 			// 相关性排序
 			rsp := "nil"
 			c.HTML(http.StatusOK,"search.html",gin.H{

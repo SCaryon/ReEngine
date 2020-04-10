@@ -1,15 +1,20 @@
 package utils
 
 import (
+	"fmt"
 	"github.com/huichen/sego"
+	"os"
 )
 
 var Segmenter sego.Segmenter
 func InitSegment() {
+	environ := os.Environ()
+	for i := range environ {
+		fmt.Println(environ[i])
+	}
+	goPath := os.Getenv("GOPATH")
+	path := fmt.Sprintf("%s/src/github.com/huichen/sego/data/dictionary.txt",goPath)
 	// 载入词典
-	Segmenter.LoadDictionary("github.com/huichen/sego/data/dictionary.txt")
+	Segmenter.LoadDictionary(path)
 
-	// 处理分词结果
-	// 支持普通模式和搜索模式两种分词，见代码中SegmentsToString函数的注释。
-	//sego.SegmentsToString(segments, false)
 }
