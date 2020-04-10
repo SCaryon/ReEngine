@@ -2,7 +2,9 @@ package views
 
 import (
 	"github.com/gin-gonic/gin"
+	"my_go/ReEngine/Search"
 	"net/http"
+	"log"
 )
 
 func InitRoutes(r *gin.Engine) {
@@ -19,6 +21,10 @@ func InitRoutes(r *gin.Engine) {
 			c.Request.URL.Path = "/"
 			r.HandleContext(c)
 		} else {
+			log.Println("search context:%s",context)
+			// 查找倒排索引
+			docId := Search.Search(context)
+			// 相关性排序
 			rsp := "nil"
 			c.HTML(http.StatusOK,"search.html",gin.H{
 				"title"		: context,
