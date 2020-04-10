@@ -36,7 +36,7 @@ func Search(context string) []int{
 			}
 			log.Println(id, docId)
 			idSlice := utils.StringToSlice(tmpId)
-			for _,id := range(idSlice) {
+			for _,id := range idSlice {
 				docId[id] = true
 			}
 		}
