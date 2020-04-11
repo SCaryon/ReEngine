@@ -17,6 +17,8 @@ func main(){
 
 	// 初始化分词器
 	utils.InitSegment()
+	// 初始化数据库
+	utils.InitDB()
 	// routes
 	views.InitRoutes(r)
 
