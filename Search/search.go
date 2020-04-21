@@ -2,17 +2,14 @@ package Search
 
 import (
 	"fmt"
-	"github.com/huichen/sego"
 	"log"
 	"my_go/ReEngine/util"
 )
 // 处理过程：分词，将结果分别在数据库中寻找对应的doc_id，然后求交
-func Search(context string) []int{
+func Search(content string) []int{
 	// 分词
-	tmpSegments := utils.Segmenter.Segment([]byte(context))
-	seg := sego.SegmentsToSlice(tmpSegments, true)
+	seg := utils.SegmentContent(content)
 	log.Printf("%v",seg)
-	// todo 去除停用词
 
 	// 连接数据库
 	db := utils.DB
@@ -32,11 +29,11 @@ func Search(context string) []int{
 			//定义变量接收查询数据
 			var id int
 			var tmpId string
-			err := rows.Scan(&id, &docId)
+			err := rows.Scan(&id, &tmpId)
 			if err != nil {
 				log.Printf("get data failed, error:[%v]\n", err.Error())
 			}
-			log.Println(id, docId)
+			log.Println(id, tmpId)
 			idSlice := utils.StringToSlice(tmpId)
 			for _,id := range idSlice {
 				docId[id] = true

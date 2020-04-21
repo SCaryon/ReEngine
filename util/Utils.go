@@ -5,21 +5,29 @@ import (
 	json "github.com/json-iterator/go"
 	"io/ioutil"
 	"os"
-	"time"
+	"syscall"
 )
 
 const (
 	DBDocment = "docment"			// 文档数据
 	DBInvertDoc = "invert_index"	// 倒排索引
 	DocPath = "tmp/docment/"		// 临时文档路径
+	StopWord = "util/StopWord.txt"	// 停用词路径
 )
 
 type Article struct {
-	id int
-	title string
-	auth string
-	context string
-	createTime int
+	Id         int
+	Title      string
+	Auth       string
+	Context    string
+	CreateTime int
+	Delete	   bool
+}
+
+type Invert struct {
+	Id			int		`db:"id"`
+	KeyWord		string	`db:"key_word"`
+	DocId		string	`db:"doc_id"`
 }
 
 
@@ -52,7 +60,6 @@ func GetAndReadFiles() []Article{
 	if err != nil {
 		panic(err)
 	}
-	// 获取文件，并输出它们的名字
 	for _, file := range files {
 		txt, err := ioutil.ReadFile(file.Name())
 		if err != nil {
@@ -60,7 +67,14 @@ func GetAndReadFiles() []Article{
 		}
 		// 将字节流转换为字符串
 		content := string(txt)
-		resp = append(resp,Article{context:content,createTime:int(time.Now().Unix())})
+		createTime := GetFileCreateTime(file)
+		resp = append(resp,Article{Title: file.Name(),Context:content,CreateTime: createTime})
 	}
 	return resp
+}
+
+func GetFileCreateTime(file os.FileInfo) int {
+	statT := file.Sys().(*syscall.Stat_t)
+	tCreate := statT.Ctimespec.Sec
+	return int(tCreate)
 }
