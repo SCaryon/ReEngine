@@ -13,6 +13,7 @@ const (
 	DBInvertDoc = "invert_index"	// 倒排索引
 	DocPath = "tmp/docment/"		// 临时文档路径
 	StopWord = "util/StopWord.txt"	// 停用词路径
+	DocLimit = 10					// 一页的文档数量限制
 )
 
 type Article struct {
@@ -21,13 +22,18 @@ type Article struct {
 	Auth       string
 	Context    string
 	CreateTime int
-	Delete	   bool
 }
 
 type Invert struct {
 	Id			int		`db:"id"`
 	KeyWord		string	`db:"key_word"`
 	DocId		string	`db:"doc_id"`
+}
+
+type Relevance struct {
+	*Article
+	docId		int
+	weight		float32
 }
 
 
@@ -48,14 +54,14 @@ func SliceToString(context []int) string {
 	return string(resp)
 }
 
-func GetAndReadFiles() []Article{
+func GetAndReadFiles(filePath string) []Article{
 	var resp []Article
 	environ := os.Environ()
 	for i := range environ {
 		fmt.Println(environ[i])
 	}
 	goPath := os.Getenv("GOPATH")
-	path := fmt.Sprintf("%s/%s",goPath,DocPath)
+	path := fmt.Sprintf("%s/%s",goPath,filePath)
 	files, err := ioutil.ReadDir(path)
 	if err != nil {
 		panic(err)

@@ -17,14 +17,15 @@ func DelDocment() {
 
 // 将存放在tmp文件中的临时文档读取并进行存储和生成倒排索引然后删除文档文件
 func UpdateIndex() bool {
-	files := utils.GetAndReadFiles()
+	files := utils.GetAndReadFiles(utils.DocPath)
 	db := utils.DB
 	if db == nil {
 		log.Println("connect db failed")
 		return false
 	}
+	delete := make(map[int]bool)
 	// 将文档放入数据库
-	for _,it := range files {
+	for i,it := range files {
 		queryStr := fmt.Sprintf("INSERT INTO %s(title,auth,context,create_time)VALUES (?,?,?)",utils.DBDocment)
 		result,err := db.Exec(queryStr,it.Title,it.Auth,it.Context,it.CreateTime)
 		if err != nil {
@@ -34,7 +35,7 @@ func UpdateIndex() bool {
 		id,err := result.LastInsertId()
 		it.Id = int(id)
 		// 对于未能成功放入数据库的文档暂时不删除
-		it.Delete = true
+		delete[i] = true
 	}
 
 	// 创建倒排索引
@@ -65,8 +66,8 @@ func UpdateIndex() bool {
 	}
 
 	// 删除临时文件
-	for _,it := range files {
-		if it.Delete == false {
+	for i,it := range files {
+		if delete[i] == false {
 			continue
 		}
 		docPath := fmt.Sprintf("%s%s",utils.DocPath,it.Title)
