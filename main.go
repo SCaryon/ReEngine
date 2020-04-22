@@ -19,6 +19,8 @@ func main(){
 	utils.InitSegment()
 	// 初始化数据库
 	utils.InitDB()
+	// 加载停用词
+	utils.LoadStopWord()
 	// routes
 	views.InitRoutes(r)
 

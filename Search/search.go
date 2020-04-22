@@ -6,7 +6,7 @@ import (
 	"my_go/ReEngine/util"
 )
 // 处理过程：分词，将结果分别在数据库中寻找对应的doc_id，然后求交
-func Search(content string) ([]int,[]string){
+func Search(content string) ([]int,[]string,map[string]int){
 	// 分词
 	seg := utils.SegmentContent(content)
 	log.Printf("%v",seg)
@@ -15,14 +15,15 @@ func Search(content string) ([]int,[]string){
 	db := utils.DB
 	if db == nil {
 		log.Println("connect db failed")
-		return nil, nil
+		return nil, nil, nil
 	}
 	var docId = make(map[int]bool)
-	for _,tmp := range seg {
-		queryStr := fmt.Sprintf("select id,doc_id from %s where key_word=%s",utils.DBInvertDoc,tmp)
+	var invert = make(map[string]int)
+	for _,word := range seg {
+		queryStr := fmt.Sprintf("select id,doc_id from %s where key_word=%s",utils.DBInvertDoc,word)
 		rows,err := db.Query(queryStr)
 		if err == nil || rows == nil {
-			log.Printf("use %s table ,query = %s failed\n",utils.DBInvertDoc,tmp)
+			log.Printf("use %s table ,query = %s failed\n",utils.DBInvertDoc,word)
 			continue
 		}
 		for rows.Next() {
@@ -38,11 +39,12 @@ func Search(content string) ([]int,[]string){
 			for _,id := range idSlice {
 				docId[id] = true
 			}
+			invert[word] = len(idSlice)
 		}
 	}
 	var result []int
 	for key,_ := range docId {
 		result = append(result, key)
 	}
-	return result, seg
+	return result, seg, invert
 }

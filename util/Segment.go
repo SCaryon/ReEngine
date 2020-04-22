@@ -9,6 +9,7 @@ import (
 )
 
 var Segmenter sego.Segmenter
+var StopWord []string
 func InitSegment() {
 	environ := os.Environ()
 	for i := range environ {
@@ -24,13 +25,9 @@ func InitSegment() {
 func SegmentContent(content string) []string {
 	tmpSegments := Segmenter.Segment([]byte(content))
 	seg := sego.SegmentsToSlice(tmpSegments, true)
-	stop, err := GetStopWord()
 	dict := make(map[string] bool)
-	if err != nil {
-		return seg
 
-	}
-	for _,it := range stop {
+	for _,it := range StopWord {
 		dict[it] = true
 	}
 	var res []string
@@ -42,13 +39,12 @@ func SegmentContent(content string) []string {
 	return res
 }
 
-func GetStopWord() ([]string, error) {
-	file,err := os.Open(StopWord)
+func LoadStopWord() {
+	file,err := os.Open(StopWordPath)
 	if err != nil {
-		return nil,err
+		return
 	}
 	tmp, _ := ioutil.ReadAll(file)
 	content := string(tmp)
-	res := strings.Split(content,"\n")
-	return res, nil
+	StopWord = strings.Split(content,"\n")
 }
