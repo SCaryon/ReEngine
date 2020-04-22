@@ -6,16 +6,16 @@ import (
 	"my_go/ReEngine/util"
 )
 // 处理过程：分词，将结果分别在数据库中寻找对应的doc_id，然后求交
-func Search(content string) ([]int,[]string,map[string]int){
+func Search(content string) ([]int,[]string,map[string]int,error){
 	// 分词
 	seg := utils.SegmentContent(content)
 	log.Printf("%v",seg)
 
 	// 连接数据库
 	db := utils.DB
-	if db == nil {
-		log.Println("connect db failed")
-		return nil, nil, nil
+	if err := db.Ping(); err != nil{
+		log.Printf("open database fail,%v\n",err)
+		return nil, nil, nil,err
 	}
 	var docId = make(map[int]bool)
 	var invert = make(map[string]int)
@@ -46,5 +46,5 @@ func Search(content string) ([]int,[]string,map[string]int){
 	for key,_ := range docId {
 		result = append(result, key)
 	}
-	return result, seg, invert
+	return result, seg, invert,nil
 }

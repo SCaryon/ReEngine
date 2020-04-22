@@ -19,9 +19,10 @@ func main(){
 	utils.InitSegment()
 	// 初始化数据库
 	utils.InitDB()
+	defer utils.DB.Close()
 	// 加载停用词
 	utils.LoadStopWord()
-	// routes
+	// 路由
 	views.InitRoutes(r)
 
 	r.Run()

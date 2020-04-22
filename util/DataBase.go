@@ -20,7 +20,8 @@ var DB *sql.DB
 func InitDB() {
 	//构建连接："用户名:密码@tcp(IP:端口)/数据库?charset=utf8"
 	path := strings.Join([]string{userName, ":", password, "@tcp(",ip, ":", port, ")/", dbName, "?charset=utf8"}, "")
-	DB, err := sql.Open("mysql", path)
+	db, err := sql.Open("mysql", path)
+	DB = db
 	if err != nil{
 		log.Printf("connect mysql fail :%s\n",err)
 		return
@@ -38,3 +39,13 @@ func InitDB() {
 	}
 	log.Println("connnect success")
 }
+
+//func GetDB() *sql.DB {
+//	if db == nil {
+//		InitDB()
+//	}
+//	return db
+//}
+//func CloseDB() {
+//	db.Close()
+//}
