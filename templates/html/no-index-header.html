@@ -1,0 +1,11 @@
+{{define "no-index-header"}}
+{{ template "header" .}}
+<nav class="navbar navbar-light bg-light container-fluid">
+    <form class="form-inline col-10">
+        <a href="/" class="navbar-brand">ReEngine</a>
+        <input class="form-control mr-0 sm-6 col-6" type="text" name="content" placeholder="{{.content}}" aria-label="Search">
+        <button class="btn btn-primary my-2 my-sm-0" type="submit">开始搜索</button>
+    </form>
+    <a href="/admin/login" class="btn btn-outline-primary mr-sm-2">管理员登陆</a>
+</nav>
+{{end}}

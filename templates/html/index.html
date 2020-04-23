@@ -1,19 +1,23 @@
 {{define "index.html"}}
-
     {{template "header" .}}
-    <div style="
-    text-align: center;
-    outline-style: none ;
-    border-radius: 3px;
-    padding: 7px 0px;
-    height: 50px;
-    width: 100%;
-    ">
-        <img hidefocus="true" id="s_lg_img_new" class="index-logo-srcnew" src="//www.baidu.com/img/bd_logo1.png" width="270" height="129" onerror="this.src='//www.baidu.com/img/bd_logo1.png';this.onerror=null;" usemap="#mp">
-        <form action="/s" style="height: 100%;">
-        <input style="height: 40px;width: 600px;font-size: large;" type="text" name="context">
-        <input style="height: 46px;padding-left: 0px;border-left: 0px;font-size: larger;background: #3385ff;color: white" type="submit" value="搜索一下">
-        </form></div>
+    <nav class="navbar navbar-light bg-light">
+        <a href="/" class="navbar-brand">ReEngine</a>
+        <a href="/admin/login" class="btn btn-outline-primary mr-sm-2">管理员登陆</a>
+    </nav>
+    <div class="container-fluid">
+        <div class="row" >
+            <div class="col-md-4"></div>
+            <div class="col-md-4" ><img hidefocus="true" id="s_lg_img_new" class="index-logo-srcnew" src="//www.baidu.com/img/bd_logo1.png" width="270" height="129" onerror="this.src='//www.baidu.com/img/bd_logo1.png';this.onerror=null;" usemap="#mp"></div>
+        </div>
+        <br>
+        <div class="row">
+            <div class="col-md-2"></div>
+            <div class="col-md-8"><form action="/s" class="form-inline">
+                <input class="form-control" style="width: 75%" placeholder="输入搜索内容" type="text" name="content" autocomplete="on">
+                <input class="btn btn-primary" type="submit" value="搜索一下">
+            </form></div>
+        </div>
+    </div>
     {{template "footer" }}
 
 {{end}}
