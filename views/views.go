@@ -1,98 +1,82 @@
 package views
 
 import (
+	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"log"
-	"my_go/ReEngine/Search"
+	"my_go/ReEngine/MiddleWare"
+	"my_go/ReEngine/Model"
 	utils "my_go/ReEngine/util"
+	"my_go/ReEngine/views/search"
+	"my_go/ReEngine/views/user"
 	"net/http"
-	"strconv"
 )
 
 func InitRoutes(r *gin.Engine) {
+	// 计时
+	r.Use(MiddleWare.Timer)
+	// 用户权限判断
+	r.Use(MiddleWare.AuthMiddleWare)
 	r.GET("/test",func(c *gin.Context) {
-		c.HTML(http.StatusOK, "test.html",gin.H{})
+		key := c.Keys[utils.IsLogin]
+		var res []Model.Article
+		res = append(res,Model.Article{Title:"test1",Auth:"SCaryon",Content:"testContext1"})
+		res = append(res,Model.Article{Title:"test2",Auth:"SCaryon",Content:"testContext2"})
+		docJson, _ := json.Marshal(res)
+		log.Println("docjson : ",string(docJson))
+		c.HTML(http.StatusOK, "test.html",gin.H{
+			"login"		: key,
+			"numberDoc"	: len(res),
+			"docs"		: string(docJson),
+			"upload"	: c.Query("status"),
+		})
 	})
-	// 管理员相关的操作
-	admin:=r.Group("/admin")
-	{
-		admin.GET("/login", func(c *gin.Context) {
-			userLogIn(r,c)
-		})
-		admin.GET("/register", func(c *gin.Context) {
-			userRegister(r,c)
-		})
-		admin.GET("/submit", func(c *gin.Context) {
-			submitDoc(r,c)
-		})
-		admin.GET("/delete", func(c *gin.Context) {
-			deleteDoc(r,c)
-		})
-	}
+
 	// homepage
-	r.GET("/",func(c *gin.Context) {
+	r.Any("/",func(c *gin.Context) {
+		key := c.Keys[utils.IsLogin]
+		log.Printf("log status:%v",key)
 		c.HTML(http.StatusOK, "index.html",gin.H{
 			"title"		: "HomePage",
+			"login"		: key,
 		})
 	})
-	// 搜索相关操作
-	search := r.Group("/s")
+
+	// 管理员相关的操作
+	v1:=r.Group("/admin")
 	{
-		search.GET("/", func(c *gin.Context) {
-			searchContent(r,c)
+		v1.GET("/",func(c *gin.Context){
+			user.Manage(r,c)
+		})
+		v1.Any("/login", func(c *gin.Context) {
+			user.LogIn(r,c)
+		})
+		v1.GET("/logout", func(c *gin.Context) {
+			user.LogOut(r,c)
+		})
+		v1.POST("/register", func(c *gin.Context) {
+			user.Register(r,c)
+		})
+		v1.POST("/submit", func(c *gin.Context) {
+			user.SubmitDoc(r,c)
+		})
+		v1.POST("/delete", func(c *gin.Context) {
+			user.DeleteDoc(r,c)
+		})
+		v1.GET("/update",func(c *gin.Context) {
+			user.UpdateIndex(r,c)
+		})
+	}
+
+	// 搜索相关操作
+	v2 := r.Group("/s")
+	{
+		v2.GET("/", func(c *gin.Context) {
+			search.SearchContent(r,c)
+		})
+		v2.GET("/doc", func(c *gin.Context) {
+			search.Docment(r,c)
 		})
 	}
 }
 
-func userLogIn(r *gin.Engine, c *gin.Context) {
-	c.HTML(http.StatusOK,"login.html",gin.H{
-		"title"			:	"Login",
-		"warning"		:	"no data",
-	})
-}
-func userRegister(r *gin.Engine, c *gin.Context) {
-
-}
-func submitDoc(r *gin.Engine, c *gin.Context) {
-
-}
-func deleteDoc(r *gin.Engine, c *gin.Context) {
-
-}
-func searchContent(r *gin.Engine, c *gin.Context) {
-	// search result s?context=xxxx&offset=x
-	content := c.Query("content")
-	offset := c.Query("offset")
-	if content == "" {
-		toHomePage(r,c)
-		return
-	}
-	log.Println("search content:%s",content)
-	// 查找倒排索引
-	docId,seg,invert,err := Search.Search(content)
-	if err != nil {
-		toHomePage(r,c)
-		return
-	}
-	// 相关性排序
-	resp := Search.RelevanceSort(docId,seg,invert)
-	// todo redis缓存搜索数据，分页用
-	// 分页
-	offsetTmp,err := strconv.Atoi(offset)
-	if err != nil {
-		// 非法参数
-		toHomePage(r,c)
-		return
-	}
-	index := offsetTmp * utils.DocLimit
-	c.HTML(http.StatusOK,"search.html",gin.H{
-		"title"		: content,
-		"content"	: content,
-		"result"	: resp[index:index+utils.DocLimit],
-	})
-}
-
-func toHomePage(r *gin.Engine, c *gin.Context) {
-	c.Request.URL.Path = "/"
-	r.HandleContext(c)
-}

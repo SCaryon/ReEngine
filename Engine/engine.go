@@ -25,22 +25,23 @@ func UpdateIndex() bool {
 	}
 	delete := make(map[int]bool)
 	// 将文档放入数据库
-	for i,it := range files {
+	for i,file := range files {
+		log.Printf("insert file,Title=%s,Auth=%s,Content=%s",file.Title,file.Auth,file.Content)
 		queryStr := fmt.Sprintf("INSERT INTO %s(title,auth,context,create_time)VALUES (?,?,?)",utils.DBDocment)
-		result,err := db.Exec(queryStr,it.Title,it.Auth,it.Context,it.CreateTime)
+		result,err := db.Exec(queryStr,file.Title,file.Auth,file.Content,file.CreateTime)
 		if err != nil {
 			log.Printf("insert failed,err=%v",err)
 			continue
 		}
 		id,err := result.LastInsertId()
-		it.Id = int(id)
+		file.Id = int(id)
 		// 对于未能成功放入数据库的文档暂时不删除
 		delete[i] = true
 	}
 
 	// 创建倒排索引
 	for _,it := range files {
-		seg := utils.SegmentContent(fmt.Sprintf("%s %s %s",it.Title,it.Context,it.Auth))
+		seg := utils.SegmentContent(fmt.Sprintf("%s %s %s",it.Title,it.Content,it.Auth))
 		for _,word := range seg {
 			queryStr := fmt.Sprintf("select id,doc_id from %s where key_word=%s\n",utils.DBInvertDoc,word)
 			rows,err := db.Query(queryStr)

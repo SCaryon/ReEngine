@@ -1,5 +1,59 @@
 {{define "search.html"}}
     {{template "no-index-header" .}}
     <div>result={{.result}}</div>
+    <div class="container-fluid">
+        <div class="row">
+            <!--显示文档信息-->
+            <div class="col-md-8 ">
+                <div><h4 class="table-primary">搜索结果</h4></div>
+                <div class="text-secondary">{{.numberDoc}}</div>
+                <div id="doc"></div>
+                <!--js根据参数在指定位置插入html-->
+            </div>
+
+            <div class="col-md-4 ant-divider-vertical">
+                <!--侧边栏放什么还没想好-->
+            </div>
+        </div>
+    </div>
+    <script>
+        String.prototype.format = function(args) {
+            var result = this;
+            if (arguments.length > 0) {
+                if (arguments.length == 1 && typeof (args) == "object") {
+                    for (var key in args) {
+                        if(args[key]!=undefined){
+                            var reg = new RegExp("({" + key + "})", "g");
+                            result = result.replace(reg, args[key]);
+                        }
+                    }
+                }
+                else {
+                    for (var i = 0; i < arguments.length; i++) {
+                        if (arguments[i] != undefined) {
+                            var reg= new RegExp("({)" + i + "(})", "g");
+                            result = result.replace(reg, arguments[i]);
+                        }
+                    }
+                }
+        }
+            return result;
+        }
+        var titleTmp = "<h3><a href=\"/s/?id={0}\">{1}</a></h3>"
+        var authTmp = "<p class=\"text-success\">{0}</p>"
+        var contentTmp = "<p>{0}</p>"
+        var docTmp = document.getElementById("doc");
+        var numDoc = {{.numberDoc}};
+        var docs = JSON.parse({{.docs}})
+        for(let i = 0; i < numDoc; i++) {
+            let titleStr = titleTmp.format(docs[i].Id, docs[i].Title);
+            let authStr = authTmp.format(docs[i].Auth);
+            let ContentStr = contentTmp.format(docs[i].Content);
+            docTmp.insertAdjacentHTML("beforebegin",titleStr)
+            docTmp.insertAdjacentHTML("beforebegin",authStr)
+            docTmp.insertAdjacentHTML("beforebegin",ContentStr)
+            docTmp.insertAdjacentHTML("beforebegin","<br>")
+        }
+    </script>
     {{template "footer" }}
 {{end}}

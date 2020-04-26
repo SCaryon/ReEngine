@@ -4,13 +4,14 @@ import (
 	"fmt"
 	"log"
 	"math"
+	"my_go/ReEngine/Model"
 	"my_go/ReEngine/util"
 	"sort"
 )
 
 // 给拿到的docId进行相关性排序
-func RelevanceSort(docId []int,segs []string,invert map[string]int) []utils.Relevance {
-	var resp []utils.Relevance
+func RelevanceSort(docId []int,segs []string,invert map[string]int) []Model.Relevance {
+	var resp []Model.Relevance
 	db := utils.DB
 	for _,it := range docId {
 		// 拿到文档数据
@@ -22,7 +23,7 @@ func RelevanceSort(docId []int,segs []string,invert map[string]int) []utils.Rele
 		}
 		for rows.Next() {
 			//定义变量接收查询数据
-			var tmp utils.Relevance
+			var tmp Model.Relevance
 			err := rows.Scan(&tmp)
 			if err != nil {
 				log.Printf("get data failed, error:[%v]\n", err.Error())
@@ -30,7 +31,7 @@ func RelevanceSort(docId []int,segs []string,invert map[string]int) []utils.Rele
 			// 存储分词结果
 			// todo 从redis里面拿到文章的分词的信息
 			tmp.TitleSegs = utils.SegmentContent(tmp.Title)
-			tmp.ContentSegs = utils.SegmentContent(tmp.Context)
+			tmp.ContentSegs = utils.SegmentContent(tmp.Content)
 			resp = append(resp,tmp)
 		}
 	}
@@ -62,11 +63,11 @@ func RelevanceSort(docId []int,segs []string,invert map[string]int) []utils.Rele
 		it.Weight = weight
 	}
 	// 按权重大小对于结果进行排序
-	sort.Sort(utils.DocSlice(resp))
+	sort.Sort(Model.DocSlice(resp))
 	return resp
 }
 
-func getTF(seg string,doc utils.Relevance) float64 {
+func getTF(seg string,doc Model.Relevance) float64 {
 	var res float64
 	var times,all int
 	all = len(doc.TitleSegs) + len(doc.ContentSegs)

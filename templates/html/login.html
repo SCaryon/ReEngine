@@ -9,27 +9,25 @@
             <div class="modal-header">
                 <h4 class="modal-title text-center" id="myModalLabel">登录到ReEngine</h4>
             </div>
+            <form method="post" action="/admin/login" name="user_info">
             <div class="modal-body" id = "model-body">
                 <div class="form-group">
                     <p>用户名</p>
-                    <input type="text" class="form-control"placeholder="用户名" autocomplete="off">
+                    <input type="text" required class="form-control"placeholder="用户名" autocomplete="off" name="username" value="{{.username}}">
                 </div>
                 <div class="form-group">
                     <p>用户名</p>
-                    <input type="password" class="form-control" placeholder="密码" autocomplete="off">
+                    <input type="password" required class="form-control" placeholder="密码" autocomplete="off" name="password" value="{{.password}}">
                 </div>
                 <br>
                 <p class="text-danger">{{.warning}}</p>
                 <div class="form-group m-auto">
-                    <button type="button" class="btn btn-success form-control ">登录</button>
+                    <input class="btn btn-success form-control " type="submit" value="登录">
                 </div>
                 <br>
             </div>
-            <!--<div class="modal-footer">
-                <div class="form-group m-auto">
-                    <button type="button" class="btn btn-success form-control ">登录</button>
-                </div>
-            </div>-->
+            </form>
+
         </div><!-- /.modal-content -->
     </div>
     {{template "footer" }}

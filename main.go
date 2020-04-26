@@ -10,18 +10,20 @@ import (
 func main(){
 	log.Println("Engine start")
 	r := gin.Default()
-	// use midleware
+	// use middleware
 	r.Use(gin.Logger())
 	r.Use(gin.Recovery())
 	r.LoadHTMLGlob("templates/**/*")
 
 	// 初始化分词器
-	utils.InitSegment()
+	//utils.InitSegment()
 	// 初始化数据库
 	utils.InitDB()
 	defer utils.DB.Close()
 	// 加载停用词
 	utils.LoadStopWord()
+	// 初始化Cache
+	utils.InitCache()
 	// 路由
 	views.InitRoutes(r)
 
