@@ -102,7 +102,7 @@ func LogIn(r *gin.Engine, c *gin.Context) {
 		var passwordTmp string
 		rows, err := db.Query(queryStr)
 		if err != nil {
-			log.Fatal(err)
+			log.Printf("db query failed,str=%s,%s",queryStr,err)
 			check = false
 			warning = "网站打瞌睡了，请稍后再试"
 		}

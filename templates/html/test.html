@@ -1,50 +1,18 @@
 {{define "test.html"}}
-    {{template "header" .}}
-    <nav class="navbar navbar-light bg-light">
-        <a class="navbar-brand">ReEngine管理界面</a>
-        <a href="/" class="btn-outline-primary">去首页</a>
-    </nav>
-
+    {{template "no-index-header" .}}
+    <div>result={{.result}}</div>
     <div class="container-fluid">
         <div class="row">
             <!--显示文档信息-->
             <div class="col-md-8 ">
-                <div><h4 class="table-primary">现有的文档</h4></div>
+                <div><h4 class="table-primary">搜索结果</h4></div>
                 <div class="text-secondary">{{.numberDoc}}</div>
                 <div id="doc"></div>
                 <!--js根据参数在指定位置插入html-->
-
             </div>
 
             <div class="col-md-4 ant-divider-vertical">
-                <!--上传文件-->
-                <div class="modal-dialog" style="margin-top: 5%;width: 350px">
-                    <div class="modal-content">
-                        <div class="modal-header"><h4 class="modal-title text-center">上传新的文件</h4></div>
-                        <form action="/admin/submit" method="post" enctype="multipart/form-data">
-                            <div class="modal-body">
-                                <input class="form-control-file mr-sm-2" type="file" name="upload_file" multiple required >
-                                <br>
-                                <div class="form-group row">
-                                    <label class="col-sm-4 col-form-label">文档作者:</label>
-                                    <div class="col-sm-4">
-                                    <input class="form-control " type="text" name="auth" required >
-                                    </div>
-                                </div>
-                                <br>
-                                <input class="btn btn-success form-control " type="submit" value="提交">
-                            </div>
-                        </form>
-                    </div>
-                </div>
-                <!--更新索引-->
-                <div class="text-center">
-
-                    <form class="navbar-form" method="get" action="/admin/update">
-                        <button class="btn-warning btn-lg" onclick="return confirm('索引每日自动更新，手动更新可能影响用户体验。是否确定更新')">更新索引</button>
-                    </form>
-
-                </div>
+                <!--侧边栏放什么还没想好-->
             </div>
         </div>
     </div>
@@ -71,16 +39,6 @@
             }
             return result;
         }
-        var isAlert = {{.upload}}
-        if ( isAlert === "1" ) {
-            alert("文件上传成功")
-        } else if ( isAlert === "0" ) {
-            alert("文件上传失败")
-        }
-        var updateIndex = {{.index}}
-        if ( updateIndex === "1" ) {
-            alert("请求已提交，正在更新文档索引")
-        }
         var titleTmp = "<h3><a href=\"/s/?id={0}\">{1}</a></h3>"
         var authTmp = "<p class=\"text-success\">{0}</p>"
         var contentTmp = "<p>{0}</p>"
@@ -88,9 +46,9 @@
         var numDoc = {{.numberDoc}};
         var docs = JSON.parse({{.docs}})
         for(let i = 0; i < numDoc; i++) {
-            var titleStr = titleTmp.format(docs[i].Id,docs[i].Title)
-            var authStr = authTmp.format(docs[i].Auth)
-            var ContentStr = contentTmp.format(docs[i].Content)
+            let titleStr = titleTmp.format(docs[i].Id, docs[i].Title);
+            let authStr = authTmp.format(docs[i].Auth);
+            let ContentStr = contentTmp.format(docs[i].Content);
             docTmp.insertAdjacentHTML("beforebegin",titleStr)
             docTmp.insertAdjacentHTML("beforebegin",authStr)
             docTmp.insertAdjacentHTML("beforebegin",ContentStr)

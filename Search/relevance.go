@@ -15,19 +15,27 @@ func RelevanceSort(docId []int,segs []string,invert map[string]int) []Model.Rele
 	db := utils.DB
 	for _,it := range docId {
 		// 拿到文档数据
-		queryStr := fmt.Sprintf("select * from %s where id=%d",utils.DBDocment,it)
+		queryStr := fmt.Sprintf("select id,title,auth,context,create_time from %s where id=%d",utils.DBDocment,it)
 		rows,err := db.Query(queryStr)
 		if err != nil || rows == nil {
 			log.Printf("use %s table ,query = %s failed\n",utils.DBDocment,queryStr)
 			continue
 		}
+		log.Println("queryStr",queryStr)
 		for rows.Next() {
 			//定义变量接收查询数据
-			var tmp Model.Relevance
-			err := rows.Scan(&tmp)
+			tmpId := 0
+			tmpTitle := ""
+			tmpAuth := ""
+			tmpContent := ""
+			tmpTime := 0
+			err := rows.Scan(&tmpId,&tmpTitle,&tmpAuth,&tmpContent,&tmpTime)
 			if err != nil {
 				log.Printf("get data failed, error:[%v]\n", err.Error())
 			}
+			tmpArticle := Model.Article{Id:tmpId,Title:tmpTitle,Content:tmpContent,CreateTime:tmpTime}
+			tmp := Model.Relevance{Article: &tmpArticle}
+			log.Printf("Article info:%v",tmp)
 			// 存储分词结果
 			// todo 从redis里面拿到文章的分词的信息
 			tmp.TitleSegs = utils.SegmentContent(tmp.Title)

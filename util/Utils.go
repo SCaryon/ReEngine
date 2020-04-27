@@ -18,7 +18,7 @@ const (
 	DocPath = "tmp/docment/"					// 临时文档路径
 	StopWordPath = "static/StopWord.txt"		// 停用词路径
 	DictionaryPath = "static/Dictionary.txt"	// 停用词路径
-	DocLimit = 10								// 一页的文档数量限制
+	DocPageLimit = 10								// 一页的文档数量限制
 	ToKenKey = "4kk1HgVV3koDM1L0"				// ToKen
 	CookieKey = "ReEngine_token"				// cookie key
 	IsLogin = "ReEngine_login"					// 判断是否登陆
@@ -93,4 +93,19 @@ func WriteFile(filePath string,content []string) {
 func GetPath() string {
 	goPath := os.Getenv("GOPATH")
 	return fmt.Sprintf("%s/src/my_go/ReEngine",goPath)
+}
+
+func Min(a,b int) int {
+	if a < b {
+		return  a
+	} else {
+		return b
+	}
+}
+func Max(a,b int) int {
+	if a < b {
+		return  b
+	} else {
+		return a
+	}
 }
