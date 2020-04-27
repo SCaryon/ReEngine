@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/gin-gonic/gin"
 	"log"
+	"my_go/ReEngine/Engine"
 	"my_go/ReEngine/util"
 	"my_go/ReEngine/views"
 )
@@ -27,6 +28,9 @@ func main(){
 	// 路由
 	views.InitRoutes(r)
 
+	// 添加定时任务:更新索引表
+	Engine.CreateCron()
+	defer Engine.CronUpdateIndex.Stop()
+
 	r.Run()
 }
-

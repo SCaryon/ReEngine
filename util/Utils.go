@@ -5,6 +5,7 @@ import (
 	"fmt"
 	json "github.com/json-iterator/go"
 	"io/ioutil"
+	"log"
 	"my_go/ReEngine/Model"
 	"os"
 	"syscall"
@@ -21,6 +22,7 @@ const (
 	ToKenKey = "4kk1HgVV3koDM1L0"				// ToKen
 	CookieKey = "ReEngine_token"				// cookie key
 	IsLogin = "ReEngine_login"					// 判断是否登陆
+	UpdateIndexSpec = "0 0 3 * * ?"				// 更新索引的定时任务参数，每天3天开始更新
 )
 
 func StringToSlice(context string) []int {
@@ -75,17 +77,17 @@ func GetFileCreateTime(file os.FileInfo) int {
 func WriteFile(filePath string,content []string) {
 	file, err := os.OpenFile(filePath, os.O_WRONLY|os.O_CREATE, 0666)
 	if err != nil {
-		fmt.Println("文件打开失败", err)
+		log.Println("文件打开失败", err)
 	}
 	//及时关闭file句柄
 	defer file.Close()
 	//写入文件时，使用带缓存的 *Writer
 	write := bufio.NewWriter(file)
 	for _,it := range content {
-		write.WriteString(it+"\n")
+		_, _ = write.WriteString(it + "\n")
 	}
 	//Flush将缓存的文件真正写入到文件中
-	write.Flush()
+	_ = write.Flush()
 }
 
 func GetPath() string {
