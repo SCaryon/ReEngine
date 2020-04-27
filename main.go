@@ -16,12 +16,12 @@ func main(){
 	r.LoadHTMLGlob("templates/**/*")
 
 	// 初始化分词器
-	//utils.InitSegment()
+	utils.InitSegment(utils.DictionaryPath)
 	// 初始化数据库
 	utils.InitDB()
 	defer utils.DB.Close()
 	// 加载停用词
-	utils.LoadStopWord()
+	utils.LoadStopWord(utils.StopWordPath)
 	// 初始化Cache
 	utils.InitCache()
 	// 路由

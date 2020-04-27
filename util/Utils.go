@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"bufio"
 	"fmt"
 	json "github.com/json-iterator/go"
 	"io/ioutil"
@@ -23,8 +24,8 @@ const (
 )
 
 func StringToSlice(context string) []int {
-	var resp []int
-	err := json.Unmarshal([]byte(context),resp)
+	var resp = make([]int,0)
+	err := json.Unmarshal([]byte(context),&resp)
 	if err != nil {
 		panic(err)
 	}
@@ -59,7 +60,7 @@ func GetAndReadFiles(filePath string) []Model.Article{
 		articles = append(articles,Model.Article{Title: file.Name(),Content:content,CreateTime: createTime})
 
 	}
-	fmt.Printf("files info:%v",articles)
+	//fmt.Printf("files info:%v",articles)
 	return articles
 }
 
@@ -69,3 +70,25 @@ func GetFileCreateTime(file os.FileInfo) int {
 	return int(tCreate)
 }
 
+
+//使用ioutil.WriteFile方式写入文件,是将[]byte内容写入文件,如果content字符串中没有换行符的话，默认就不会有换行符
+func WriteFile(filePath string,content []string) {
+	file, err := os.OpenFile(filePath, os.O_WRONLY|os.O_CREATE, 0666)
+	if err != nil {
+		fmt.Println("文件打开失败", err)
+	}
+	//及时关闭file句柄
+	defer file.Close()
+	//写入文件时，使用带缓存的 *Writer
+	write := bufio.NewWriter(file)
+	for _,it := range content {
+		write.WriteString(it+"\n")
+	}
+	//Flush将缓存的文件真正写入到文件中
+	write.Flush()
+}
+
+func GetPath() string {
+	goPath := os.Getenv("GOPATH")
+	return fmt.Sprintf("%s/src/my_go/ReEngine",goPath)
+}

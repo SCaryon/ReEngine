@@ -1,48 +1,59 @@
 package utils
 
 import (
-	"fmt"
+	"bufio"
 	"github.com/huichen/sego"
-	"io/ioutil"
 	"os"
-	"strings"
+	"unicode"
 )
 
 var Segmenter sego.Segmenter
-var StopWord []string
-func InitSegment() {
-	environ := os.Environ()
-	for i := range environ {
-		fmt.Println(environ[i])
-	}
+var DictStopWord map[string] bool
+func InitSegment(path string) {
 	// 载入词典
-	Segmenter.LoadDictionary(DictionaryPath)
-
+	Segmenter.LoadDictionary(path)
 }
 // 分词后去除停用词
 func SegmentContent(content string) []string {
 	tmpSegments := Segmenter.Segment([]byte(content))
 	seg := sego.SegmentsToSlice(tmpSegments, true)
-	dict := make(map[string] bool)
-
-	for _,it := range StopWord {
-		dict[it] = true
-	}
 	var res []string
 	for _,it := range seg {
-		if dict[it] != true {
+		if DictStopWord[it] == false && isLegal(it){
 			res = append(res,it)
 		}
 	}
 	return res
 }
 
-func LoadStopWord() {
-	file,err := os.Open(StopWordPath)
-	if err != nil {
-		return
+func isLegal(content string) bool {
+	if content == " " {
+		return  false
 	}
-	tmp, _ := ioutil.ReadAll(file)
-	content := string(tmp)
-	StopWord = strings.Split(content,"\n")
+	for _,it := range content {
+		if unicode.IsPrint(it) == false{
+			return false
+		}
+	}
+	return true
+}
+func LoadStopWord(path string) error {
+	file,err := os.Open(path)
+	defer file.Close()
+	if err != nil {
+		return err
+	}
+	var stopWord []string
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		stopWord = append(stopWord,scanner.Text())
+	}
+	dict := make(map[string] bool)
+	for _,word := range stopWord {
+		dict[word] = true
+	}
+	tmpPath := GetPath()
+	WriteFile(tmpPath+"/tmp/tmp.txt",stopWord)
+	DictStopWord = dict
+	return nil
 }
