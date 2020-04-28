@@ -46,7 +46,6 @@ func InsertDoc(articles []Model.Article) (map[int]bool,error) {
 	deleteMap := make(map[int]bool)
 	// 将文档放入数据库
 	for i,article := range articles {
-		log.Printf("insert file,Title=%s,Auth=%s",article.Title,article.Auth)
 		queryStr := fmt.Sprintf("INSERT INTO %s(title,auth,context,create_time)VALUES (?,?,?,?)",utils.DBDocment)
 		result,err := db.Exec(queryStr,article.Title,article.Auth,article.Content,article.CreateTime)
 		if err != nil {
@@ -54,7 +53,8 @@ func InsertDoc(articles []Model.Article) (map[int]bool,error) {
 			continue
 		}
 		id,err := result.LastInsertId()
-		article.Id = int(id)
+		articles[i].Id = int(id)
+		log.Printf("insert file,Title=%s,Auth=%s,Id=%d",article.Title,article.Auth,int(id))
 		// 对于未能成功放入数据库的文档暂时不删除
 		deleteMap[i] = true
 	}
@@ -65,22 +65,24 @@ func createInvert(articles []Model.Article) error{
 	// 创建倒排索引
 	db := utils.DB
 	for _,article := range articles {
+		dictWord := make(map[string] bool)
 		seg := utils.SegmentContent(fmt.Sprintf("%s %s %s",article.Title,article.Content,article.Auth))
 		for _,word := range seg {
-			queryStr := fmt.Sprintf("select id,doc_id from %s where key_word=%s\n",utils.DBInvertDoc, word)
+			// 去重，使得每一个单词
+			if dictWord[word] == true {
+				continue
+			} else {
+				dictWord[word] = true
+			}
+			queryStr := fmt.Sprintf("select id,doc_id from %s where key_word=\"%s\"",utils.DBInvertDoc, word)
 			rows,err := db.Query(queryStr)
 			if err != nil || rows == nil {
-				// 倒排索引为空，建立倒排索引
-				queryStr := fmt.Sprintf("INSERT INTO %s(key_word,doc_id)VALUES (?,?)",utils.DBInvertDoc)
-				log.Printf("key_word:%s invert_index is empty,insert str:%s",word,queryStr)
-				_,err := db.Exec(queryStr,word,utils.SliceToString([]int{article.Id}))
-				if err != nil {
-					log.Printf("insert invert_index failed,err=%v",err)
-					return err
-				}
+				log.Printf("select id,doc_id failed,err=%v",err)
 				continue
 			}
+			isExist := false
 			for rows.Next() {
+				isExist = true
 				var id int
 				var tmpId string
 				err := rows.Scan(&id, &tmpId)
@@ -93,7 +95,16 @@ func createInvert(articles []Model.Article) error{
 				updateStr := fmt.Sprintf("UPDATE %s SET doc_id=? where id=?",utils.DBInvertDoc)
 				_, _ = db.Exec(updateStr, utils.SliceToString(idSlice), id)
 			}
-
+			if isExist == false {
+				// 倒排索引为空，建立倒排索引
+				queryStr := fmt.Sprintf("INSERT INTO %s(key_word,doc_id)VALUES (?,?)",utils.DBInvertDoc)
+				log.Printf("key_word:%s invert_index is empty,insert str:%s",word,queryStr)
+				_,err := db.Exec(queryStr,word,utils.SliceToString([]int{article.Id}))
+				if err != nil {
+					log.Printf("insert invert_index failed,err=%v,queryStr=%s",err,queryStr)
+					return err
+				}
+			}
 		}
 	}
 	return nil

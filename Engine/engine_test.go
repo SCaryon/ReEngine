@@ -8,9 +8,6 @@ import (
 	"testing"
 )
 
-func TestUpdateIndex(t *testing.T) {
-
-}
 
 func TestInsertDoc(t *testing.T) {
 	goPath := os.Getenv("GOPATH")
@@ -28,6 +25,9 @@ func TestInsertDoc(t *testing.T) {
 		t.Fatal(err)
 	}
 	t.Log("deleteMap :",deleteMap)
+	for _,it := range articles {
+		log.Println("article.id=",it.Id)
+	}
 	err = createInvert(articles)
 	if err != nil {
 		t.Fatal(err)
