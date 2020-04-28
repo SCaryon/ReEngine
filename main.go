@@ -2,7 +2,6 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
-	"log"
 	"my_go/ReEngine/Engine"
 	"my_go/ReEngine/Model"
 	"my_go/ReEngine/util"
@@ -10,9 +9,12 @@ import (
 )
 
 func main(){
-	log.Println("Engine start")
+	// 写log到文件
+	//f, _ := os.Create("/log/gin.log")
+	//gin.DefaultWriter = io.MultiWriter(f)
+
 	r := gin.Default()
-	// use middleware
+	// 中间件使用
 	r.Use(gin.Logger())
 	r.Use(gin.Recovery())
 	r.LoadHTMLGlob("templates/**/*")

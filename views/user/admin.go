@@ -15,30 +15,33 @@ func Manage(r *gin.Engine, c *gin.Context)  {
 	key := c.Keys[utils.IsLogin]
 	if key == false {
 		log.Println("the user is not admin,can not manage web site")
-		toHomePage(r,c)
+		toHomePage(c)
 		return
 	}
-	var res []Model.Article
-	res = append(res,Model.Article{Title:"test1",Auth:"SCaryon",Content:"testContext1"})
-	res = append(res,Model.Article{Title:"test2",Auth:"SCaryon",Content:"testContext2"})
-	docJson, _ := json.Marshal(res)
-	log.Println("docjson : ",string(docJson))
-	username := Model.GetUsername(c)
-	c.HTML(http.StatusOK,"manage.html",gin.H{
-		"username"	:	username,
-		"login"		: key,
-		"numberDoc"	: len(res),
-		"docs"		: string(docJson),
-		"upload"	: c.Query("upload"),
-		"index"		: c.Query("index"),
-	})
+	res, err := Model.GetAllDocs()
+	if err != nil {
+		log.Println(err)
+		toHomePage(c)
+	} else {
+		docJson, _ := json.Marshal(res)
+		log.Println("docjson : ",string(docJson))
+		username := Model.GetUsername(c)
+		c.HTML(http.StatusOK,"manage.html",gin.H{
+			"username"	:	username,
+			"login"		: key,
+			"numberDoc"	: len(res),
+			"docs"		: string(docJson),
+			"upload"	: c.Query("upload"),
+			"index"		: c.Query("index"),
+		})
+	}
 }
 
 func SubmitDoc(r *gin.Engine, c *gin.Context) {
 	key := c.Keys[utils.IsLogin]
 	if key == false {
 		log.Println("the user is not admin,can not submit doc")
-		toHomePage(r,c)
+		toHomePage(c)
 		return
 	}
 	form,err := c.MultipartForm()
@@ -65,7 +68,7 @@ func DeleteDoc(r *gin.Engine, c *gin.Context) {
 	key := c.Keys[utils.IsLogin]
 	if key == false {
 		log.Println("the user is not admin,can not delete doc")
-		toHomePage(r,c)
+		toHomePage(c)
 		return
 	}
 }
@@ -74,7 +77,7 @@ func UpdateIndex(r *gin.Engine, c *gin.Context) {
 	key := c.Keys[utils.IsLogin]
 	if key == false {
 		log.Println("the user is not admin,can not update index")
-		toHomePage(r,c)
+		toHomePage(c)
 		return
 	}
 	go Engine.UpdateIndex()
@@ -86,7 +89,7 @@ func LogIn(r *gin.Engine, c *gin.Context) {
 	key := c.Keys[utils.IsLogin]
 	if key == true {
 		log.Println("the user is already login,can not login again")
-		toHomePage(r,c)
+		toHomePage(c)
 		return
 	}
 	username := c.DefaultPostForm("username","")
@@ -107,7 +110,7 @@ func LogIn(r *gin.Engine, c *gin.Context) {
 		// set cookie
 		c.SetCookie(utils.CookieKey, string(token),0,"/","localhost",false,true)
 		// 跳转主页
-		toHomePage(r,c)
+		toHomePage(c)
 	} else {
 		log.Println("log failed")
 		log.Printf("username=%s,password=%s",username,password)
@@ -125,20 +128,20 @@ func LogOut(r *gin.Engine,c *gin.Context) {
 	key := c.Keys[utils.IsLogin]
 	if key == false {
 		log.Println("the user is not login,can not logout")
-		toHomePage(r,c)
+		toHomePage(c)
 		return
 	}
 	// clear cookie
 	token, _ := c.Cookie(utils.CookieKey)
 	c.SetCookie(utils.CookieKey,token,-1,"/","localhost",false,true)
-	toHomePage(r,c)
+	toHomePage(c)
 }
 
 func Register(r *gin.Engine, c *gin.Context) {
 	key := c.Keys[utils.IsLogin]
 	if key == false {
 		log.Println("the user is not admin,can not register user")
-		toHomePage(r,c)
+		toHomePage(c)
 		return
 	}
 	name := c.Query("username")
@@ -152,6 +155,6 @@ func Register(r *gin.Engine, c *gin.Context) {
 }
 
 
-func toHomePage(r *gin.Engine, c *gin.Context) {
+func toHomePage(c *gin.Context) {
 	c.Redirect(http.StatusFound,"/")
 }

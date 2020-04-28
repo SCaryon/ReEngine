@@ -22,7 +22,7 @@ func RelevanceSort(docId []int,segs []string,invert map[string]int) []Model.Rele
 		tmp.ContentSegs = utils.SegmentContent(tmp.Content)
 		resp = append(resp,tmp)
 	}
-	dataNum, _ := Model.CountArticle()
+	dataNum, _ := Model.CountDocs()
 	// 计算TF-IDF
 	var weight float64
 	for _,it := range resp {

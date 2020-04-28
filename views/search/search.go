@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	json "github.com/json-iterator/go"
 	"log"
+	"my_go/ReEngine/Model"
 	"my_go/ReEngine/Search"
 	utils "my_go/ReEngine/util"
 	"net/http"
@@ -13,10 +14,19 @@ import (
 
 func Docment(r *gin.Engine, c *gin.Context) {
 	key := c.Keys[utils.IsLogin]
-	docId := c.Query("id")
+	id := c.Query("id")
+	docId,_ := strconv.Atoi(id)
+	doc,err := Model.GetDocByIds([]int{docId})
+	docJson, _ := json.Marshal(doc[0])
+	if err != nil {
+		toHomePage(c)
+		return
+	}
 	c.HTML(http.StatusOK,"docment.html",gin.H{
+		"title"		: "docment",
 		"login"		: key,
 		"doc_id"	: docId,
+		"doc"		: string(docJson),
 	})
 }
 
@@ -27,7 +37,7 @@ func SearchContent(r *gin.Engine, c *gin.Context) {
 	log.Println("offset",offset)
 	key := c.Keys[utils.IsLogin]
 	if content == "" {
-		toHomePage(r,c)
+		toHomePage(c)
 		return
 	}
 	log.Printf("search content:%s",content)
@@ -35,7 +45,7 @@ func SearchContent(r *gin.Engine, c *gin.Context) {
 	docId,seg,invert,err := Search.SearchInvert(content)
 	if err != nil {
 		log.Println("search invert failed",err)
-		toHomePage(r,c)
+		toHomePage(c)
 		return
 	}
 	log.Printf("SearchInvert result:%v",docId)
@@ -63,6 +73,6 @@ func SearchContent(r *gin.Engine, c *gin.Context) {
 	})
 }
 
-func toHomePage(r *gin.Engine, c *gin.Context) {
+func toHomePage(c *gin.Context) {
 	c.Redirect(http.StatusFound,"/")
 }
