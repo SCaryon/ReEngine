@@ -13,8 +13,10 @@ import (
 
 func Docment(r *gin.Engine, c *gin.Context) {
 	key := c.Keys[utils.IsLogin]
+	docId := c.Query("id")
 	c.HTML(http.StatusOK,"docment.html",gin.H{
 		"login"		: key,
+		"doc_id"	: docId,
 	})
 }
 

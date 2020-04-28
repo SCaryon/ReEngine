@@ -4,9 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	json "github.com/json-iterator/go"
-	"io/ioutil"
 	"log"
-	"my_go/ReEngine/Model"
 	"os"
 	"syscall"
 )
@@ -40,30 +38,6 @@ func SliceToString(context []int) string {
 		panic(err)
 	}
 	return string(resp)
-}
-
-func GetAndReadFiles(filePath string) []Model.Article{
-	var articles []Model.Article
-	goPath := os.Getenv("GOPATH")
-	path := fmt.Sprintf("%s/src/my_go/ReEngine/%s",goPath,filePath)
-	files, err := ioutil.ReadDir(path)
-	if err != nil {
-		panic(err)
-	}
-	for _, file := range files {
-		fmt.Println(file.Name())
-		txt, err := ioutil.ReadFile(path+file.Name())
-		if err != nil {
-			panic(err)
-		}
-		// 将字节流转换为字符串
-		content := string(txt)
-		createTime := GetFileCreateTime(file)
-		articles = append(articles,Model.Article{Title: file.Name(),Content:content,CreateTime: createTime})
-
-	}
-	//fmt.Printf("files info:%v",articles)
-	return articles
 }
 
 func GetFileCreateTime(file os.FileInfo) int {

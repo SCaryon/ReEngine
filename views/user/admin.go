@@ -23,7 +23,7 @@ func Manage(r *gin.Engine, c *gin.Context)  {
 	res = append(res,Model.Article{Title:"test2",Auth:"SCaryon",Content:"testContext2"})
 	docJson, _ := json.Marshal(res)
 	log.Println("docjson : ",string(docJson))
-	username := utils.GetUsername(c)
+	username := Model.GetUsername(c)
 	c.HTML(http.StatusOK,"manage.html",gin.H{
 		"username"	:	username,
 		"login"		: key,
@@ -97,30 +97,13 @@ func LogIn(r *gin.Engine, c *gin.Context) {
 		check = false
 	} else {
 		// check password
-		queryStr := fmt.Sprintf("select password from %s where name=\"%s\"",utils.DBUsers,username)
-		db := utils.DB
-		var passwordTmp string
-		rows, err := db.Query(queryStr)
-		if err != nil {
-			log.Printf("db query failed,str=%s,%s",queryStr,err)
-			check = false
-			warning = "网站打瞌睡了，请稍后再试"
-		}
-		for rows.Next() {
-			_ = rows.Scan(&passwordTmp)
-		}
-		if password == passwordTmp {
-			check = true
-		} else {
-			check = false
-			warning = "用户名或密码错误"
-		}
+		check,warning = Model.CheckPassWord(username,password)
 	}
 
 	if check {
 		log.Println("log success")
-		token := utils.CreateToken(username,password)
-		utils.SetToken(username,token)
+		token := Model.CreateToken(username,password)
+		Model.SetToken(username,token)
 		// set cookie
 		c.SetCookie(utils.CookieKey, string(token),0,"/","localhost",false,true)
 		// 跳转主页
@@ -157,6 +140,14 @@ func Register(r *gin.Engine, c *gin.Context) {
 		log.Println("the user is not admin,can not register user")
 		toHomePage(r,c)
 		return
+	}
+	name := c.Query("username")
+	password := c.Query("password")
+	err := Model.AddUser(name,password)
+	if err == nil {
+
+	} else {
+
 	}
 }
 

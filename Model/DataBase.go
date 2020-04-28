@@ -1,4 +1,4 @@
-package utils
+package Model
 
 import (
 	"database/sql"
@@ -39,13 +39,3 @@ func InitDB() {
 	}
 	log.Println("connnect success")
 }
-
-//func GetDB() *sql.DB {
-//	if db == nil {
-//		InitDB()
-//	}
-//	return db
-//}
-//func CloseDB() {
-//	db.Close()
-//}

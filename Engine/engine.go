@@ -18,12 +18,7 @@ func DelDocment() {
 
 // 将存放在tmp文件中的临时文档读取并进行存储和生成倒排索引然后删除文档文件
 func UpdateIndex() bool {
-	articles := utils.GetAndReadFiles(utils.DocPath)
-	db := utils.DB
-	if db == nil {
-		log.Println("connect db failed")
-		return false
-	}
+	articles := Model.GetAndReadFiles(utils.DocPath)
 	deleteMap,err := InsertDoc(articles)
 	if err != nil {
 		log.Fatal(err)
@@ -42,28 +37,23 @@ func UpdateIndex() bool {
 }
 
 func InsertDoc(articles []Model.Article) (map[int]bool,error) {
-	db := utils.DB
 	deleteMap := make(map[int]bool)
 	// 将文档放入数据库
 	for i,article := range articles {
-		queryStr := fmt.Sprintf("INSERT INTO %s(title,auth,context,create_time)VALUES (?,?,?,?)",utils.DBDocment)
-		result,err := db.Exec(queryStr,article.Title,article.Auth,article.Content,article.CreateTime)
+		id,err := Model.InsertDoc(article)
 		if err != nil {
-			log.Printf("insert failed,err=%v",err)
-			continue
+			// 对于未能成功放入数据库的文档暂时不删除
+			deleteMap[i] = true
+		} else {
+			articles[i].Id = id
+			log.Printf("insert file,Title=%s,Auth=%s,Id=%d", article.Title, article.Auth, id)
 		}
-		id,err := result.LastInsertId()
-		articles[i].Id = int(id)
-		log.Printf("insert file,Title=%s,Auth=%s,Id=%d",article.Title,article.Auth,int(id))
-		// 对于未能成功放入数据库的文档暂时不删除
-		deleteMap[i] = true
 	}
 	return deleteMap,nil
 }
 
 func createInvert(articles []Model.Article) error{
 	// 创建倒排索引
-	db := utils.DB
 	for _,article := range articles {
 		dictWord := make(map[string] bool)
 		seg := utils.SegmentContent(fmt.Sprintf("%s %s %s",article.Title,article.Content,article.Auth))
@@ -74,36 +64,18 @@ func createInvert(articles []Model.Article) error{
 			} else {
 				dictWord[word] = true
 			}
-			queryStr := fmt.Sprintf("select id,doc_id from %s where key_word=\"%s\"",utils.DBInvertDoc, word)
-			rows,err := db.Query(queryStr)
-			if err != nil || rows == nil {
-				log.Printf("select id,doc_id failed,err=%v",err)
-				continue
-			}
-			isExist := false
-			for rows.Next() {
-				isExist = true
-				var id int
-				var tmpId string
-				err := rows.Scan(&id, &tmpId)
-				if err != nil {
-					log.Printf("get data failed, error:[%v]\n", err.Error())
-				}
-				log.Println(id, tmpId)
-				idSlice := utils.StringToSlice(tmpId)
-				idSlice = append(idSlice,article.Id)
-				updateStr := fmt.Sprintf("UPDATE %s SET doc_id=? where id=?",utils.DBInvertDoc)
-				_, _ = db.Exec(updateStr, utils.SliceToString(idSlice), id)
+			tmpInvert,isExist,err := Model.SearchInvertDB(word)
+			if err != nil {
+				return err
 			}
 			if isExist == false {
 				// 倒排索引为空，建立倒排索引
-				queryStr := fmt.Sprintf("INSERT INTO %s(key_word,doc_id)VALUES (?,?)",utils.DBInvertDoc)
-				log.Printf("key_word:%s invert_index is empty,insert str:%s",word,queryStr)
-				_,err := db.Exec(queryStr,word,utils.SliceToString([]int{article.Id}))
-				if err != nil {
-					log.Printf("insert invert_index failed,err=%v,queryStr=%s",err,queryStr)
-					return err
-				}
+				_ = Model.InsertInvert(word, article.Id)
+			} else {
+				idSlice := utils.StringToSlice(tmpInvert.NumDocs)
+				idSlice = append(idSlice,article.Id)
+				tmpInvert.NumDocs = utils.SliceToString(idSlice)
+				err = Model.UpdateInvert(tmpInvert)
 			}
 		}
 	}

@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"log"
 	"my_go/ReEngine/Engine"
+	"my_go/ReEngine/Model"
 	"my_go/ReEngine/util"
 	"my_go/ReEngine/views"
 )
@@ -19,8 +20,8 @@ func main(){
 	// 初始化分词器
 	utils.InitSegment(utils.DictionaryPath)
 	// 初始化数据库
-	utils.InitDB()
-	defer utils.DB.Close()
+	Model.InitDB()
+	defer Model.DB.Close()
 	// 加载停用词
 	utils.LoadStopWord(utils.StopWordPath)
 	// 初始化Cache

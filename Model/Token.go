@@ -1,4 +1,4 @@
-package utils
+package Model
 
 import (
 	"bytes"
@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"log"
+	"my_go/ReEngine/util"
 	"time"
 )
 
@@ -18,7 +19,7 @@ import (
 */
 func CreateToken(user ,password string) []byte {
 	timeNow := time.Now().Unix()
-	str := fmt.Sprintf("%d%s%s+%s",timeNow,user,password,ToKenKey)
+	str := fmt.Sprintf("%d%s%s+%s",timeNow,user,password, utils.ToKenKey)
 	enCodeStr := fmt.Sprintf("%x",md5.Sum([]byte(str)))
 	return []byte(enCodeStr)
 }
@@ -27,12 +28,12 @@ func IsToKenLegal(token []byte) bool {
 	if token == nil || len(token) == 0{
 		return false
 	}
-	name, _ := BigCache.Get(string(token))
-	tmpToken, _ := BigCache.Get(string(name))
+	name, _ := utils.BigCache.Get(string(token))
+	tmpToken, _ := utils.BigCache.Get(string(name))
 	if bytes.Equal(tmpToken,token) {
 		return true
 	}
-	queryStr := fmt.Sprintf("select token from %s where name=%s",DBUsers,name)
+	queryStr := fmt.Sprintf("select token from %s where name=%s", utils.DBUsers,name)
 	rows, err := DB.Query(queryStr)
 	if err != nil {
 		return false
@@ -51,16 +52,15 @@ func IsToKenLegal(token []byte) bool {
 }
 
 func SetToken(name string,token []byte) {
-	db := DB
-	updateStr := fmt.Sprintf("UPDATE %s SET token=? where name=?",DBUsers)
-	db.Exec(updateStr,token,name)
-	cache := BigCache
+	updateStr := fmt.Sprintf("UPDATE %s SET token=? where name=?", utils.DBUsers)
+	DB.Exec(updateStr,token,name)
+	cache := utils.BigCache
 	cache.Set(name,token)
 	cache.Set(string(token), []byte(name))
 }
 
 func GetUsername(c *gin.Context) string {
-	token, _ := c.Cookie(CookieKey)
-	name, _ := BigCache.Get(token)
+	token, _ := c.Cookie(utils.CookieKey)
+	name, _ := utils.BigCache.Get(token)
 	return string(name)
 }
