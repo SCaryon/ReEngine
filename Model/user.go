@@ -2,6 +2,7 @@ package Model
 
 import (
 	"fmt"
+	"github.com/pkg/errors"
 	"log"
 	utils "my_go/ReEngine/util"
 )
@@ -36,6 +37,28 @@ func CheckPassWord(name, password string) (bool,string) {
 }
 
 func AddUser(name,password string) error {
+	log.Printf("Register name=%s,password=%s",name,password)
+	queryStr := fmt.Sprintf("select password from %s where name=\"%s\"",utils.DBUsers,name)
+	isExist := false
+	rows, err := DB.Query(queryStr)
+	if err != nil {
+		log.Printf("db query failed,str=%s,%s",queryStr,err)
+		return errors.New("网站打瞌睡了，请稍后再试~")
+	}
+	for rows.Next() {
+		isExist = true
 
+	}
+	if isExist == true {
+		log.Printf("username is exist,queryStr=%s",queryStr)
+		return errors.New("该用户已经存在，请换一个名字~")
+	} else {
+		queryStr = fmt.Sprintf("INSERT INTO %s(name,password)VALUES (?,?)",utils.DBUsers)
+		_,err := DB.Exec(queryStr,name,password)
+		if err != nil {
+			log.Printf("create user failed,err=%v",err)
+			return err
+		}
+	}
 	return nil
 }

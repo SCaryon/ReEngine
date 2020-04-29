@@ -1,10 +1,5 @@
 {{define "manage.html"}}
     {{template "header" .}}
-    <nav class="navbar navbar-light bg-light">
-        <a class="navbar-brand">ReEngine管理界面</a>
-        <a href="/" class="btn-outline-primary">去首页</a>
-    </nav>
-
     <div class="container-fluid">
         <div class="row">
             <!--显示文档信息-->
@@ -25,29 +20,35 @@
                             <div class="modal-body">
                                 <input class="form-control-file mr-sm-2" type="file" name="upload_file" multiple required >
                                 <br>
-                                <div class="form-group row">
-                                    <label class="col-sm-4 col-form-label">文档作者:</label>
-                                    <div class="col-sm-4">
-                                        <input class="form-control " type="text" name="auth" required >
-                                    </div>
-                                </div>
-                                <br>
                                 <input class="btn btn-success form-control " type="submit" value="提交">
                             </div>
                         </form>
                     </div>
                 </div>
-                <!--更新索引-->
-                <div class="text-center">
-
-                    <form class="navbar-form" method="get" action="/admin/update">
-                        <button class="btn-warning btn-lg" onclick="return confirm('索引每日自动更新，手动更新可能影响用户体验。是否确定更新')">更新索引</button>
-                    </form>
-
+                <!--管理员功能-->
+                <div class="modal-dialog" style="margin-top: 5%;width: 350px">
+                    <div class="modal-content">
+                        <div class="modal-header"><h4 class="modal-title text-center">网站管理</h4></div>
+                            <div class="modal-body">
+                                <!--添加管理员-->
+                                <form class="navbar-form" method="get" action="/admin/register">
+                                    <button class="btn-info btn-lg form-control">添加管理员</button>
+                                </form>
+                                <br>
+                                <!--更新索引-->
+                                <form class="navbar-form" method="get" action="/admin/update">
+                                    <button class="btn-warning btn-lg form-control" onclick="return confirm('索引每日自动更新，手动更新可能影响用户体验。是否确定更新')">更新索引</button>
+                                </form>
+                            </div>
+                    </div>
                 </div>
+
             </div>
         </div>
     </div>
+
+    {{template "footer" }}
+
     <script>
         String.prototype.format = function(args) {
             var result = this;
@@ -81,21 +82,21 @@
         if ( updateIndex === "1" ) {
             alert("请求已提交，正在更新文档索引")
         }
+        var regist = {{.regSucc}}
+        if ( regist === "1" ) {
+            alert("注册账户成功，现在可以用该账户登陆了")
+        }
         var titleTmp = "<h3><a href=\"/s/doc/?id={0}\">{1}</a></h3>"
         var authTmp = "<p class=\"text-success\">{0}</p>"
-        var contentTmp = "<p>{0}</p>"
         var docTmp = document.getElementById("doc");
         var numDoc = {{.numberDoc}};
         var docs = JSON.parse({{.docs}})
         for(let i = 0; i < numDoc; i++) {
             var titleStr = titleTmp.format(docs[i].Id,docs[i].Title)
             var authStr = authTmp.format(docs[i].Auth)
-            var ContentStr = contentTmp.format(docs[i].Content)
             docTmp.insertAdjacentHTML("beforebegin",titleStr)
             docTmp.insertAdjacentHTML("beforebegin",authStr)
-            docTmp.insertAdjacentHTML("beforebegin",ContentStr)
             docTmp.insertAdjacentHTML("beforebegin","<br>")
         }
     </script>
-    {{template "footer" }}
 {{end}}

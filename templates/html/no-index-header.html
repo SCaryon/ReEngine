@@ -1,16 +1,48 @@
 {{define "no-index-header"}}
-{{ template "header" .}}
-<nav class="navbar navbar-light bg-light container-fluid">
-    <a href="/" class="navbar-brand">ReEngine</a>
-    <form class="form-inline col-10" action="/s">
-        <input class="form-control mr-0 sm-6 col-6" type="text" name="content" value="{{.content}}" >
-        <input class="btn btn-primary my-2 my-sm-0" type="submit" value="搜索一下">
-    </form>
-    <a id="admin_button"></a>
-</nav>
+<!doctype html>
+<html lang="en">
+    <head>
+        <!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" >
+
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+        <title>{{.title}}</title>
+    </head>
+{{/*<nav class="navbar navbar-light bg-light container-fluid">*/}}
+{{/*    <a href="/" class="navbar-brand">ReEngine</a>*/}}
+{{/*    <form class="form-inline col-10" action="/s">*/}}
+{{/*        <input class="form-control mr-0 sm-6 col-6" type="text" name="content" value="{{.content}}" >*/}}
+{{/*        <input class="btn btn-primary my-2 my-sm-0" type="submit" value="搜索一下">*/}}
+{{/*    </form>*/}}
+{{/*    <a id="admin_button"></a>*/}}
+{{/*</nav>*/}}
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo01" aria-controls="navbarTogglerDemo01" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarTogglerDemo01">
+            <a class="navbar-brand" href="/">首页 </a>
+            <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+                <li class="nav-item">
+                    <div id="to_admin"></div>
+                </li>
+
+            </ul>
+            <form class="form-inline col-10" action="/s">
+                <input class="form-control mr-0 sm-6 col-6" type="text" name="content" value="{{.content}}" >
+                <input class="btn btn-primary my-2 my-sm-0" type="submit" value="搜索一下">
+            </form>
+            <div class="my-2 my-lg-0">
+                <a id="admin_button"></a>
+            </div>
+        </div>
+    </nav>
 <script>
     if ( {{.login}}) {
-        document.getElementById("admin_button").innerHTML = "<a href=\"/admin\" class=\"btn btn-outline-primary mr-sm-2\">进入管理界面</a>"
+        document.getElementById("admin_button").innerHTML = "<a href=\"/admin/logout\" class=\"btn btn-outline-primary mr-sm-2\">登出</a>"
+        document.getElementById("to_admin").innerHTML = "<a class=\"nav-link\" href=\"/admin\">ReEngine管理页面</a>"
     } else {
         document.getElementById("admin_button").innerHTML = "<a href=\"/admin/login\" class=\"btn btn-outline-primary mr-sm-2\">管理员登陆</a>"
     }

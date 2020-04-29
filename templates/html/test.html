@@ -1,59 +1,52 @@
 {{define "test.html"}}
-    {{template "no-index-header" .}}
-    <div>result={{.result}}</div>
-    <div class="container-fluid">
-        <div class="row">
-            <!--显示文档信息-->
-            <div class="col-md-8 ">
-                <div><h4 class="table-primary">搜索结果</h4></div>
-                <div class="text-secondary">{{.numberDoc}}</div>
-                <div id="doc"></div>
-                <!--js根据参数在指定位置插入html-->
-            </div>
-
-            <div class="col-md-4 ant-divider-vertical">
-                <!--侧边栏放什么还没想好-->
-            </div>
-        </div>
+    {{template "header" .}}
+    <h3>登录 信息</h3>
+    <div>
+            <span>密码(6-20位以字母开头只能包含字母、数字、下划线)<label style="color:red;">*</label> <font id="passwordMSG"></font></span>
+            <input onblur="checkPwd(this.value)" type="password" name="password" id="password" maxlength="20" required >
     </div>
-    <script>
-        String.prototype.format = function(args) {
-            var result = this;
-            if (arguments.length > 0) {
-                if (arguments.length == 1 && typeof (args) == "object") {
-                    for (var key in args) {
-                        if(args[key]!=undefined){
-                            var reg = new RegExp("({" + key + "})", "g");
-                            result = result.replace(reg, args[key]);
-                        }
-                    }
-                }
-                else {
-                    for (var i = 0; i < arguments.length; i++) {
-                        if (arguments[i] != undefined) {
-                            var reg= new RegExp("({)" + i + "(})", "g");
-                            result = result.replace(reg, arguments[i]);
-                        }
-                    }
+    <div>
+            <span>重复密码<label style="color:red;">*</label> <font id="mm2MSG"></font></span>
+            <input  oninput="checkPwd2(this.value)" form="other" type="password" id="mm2" maxlength="20" required >
+    </div>
+        <script>
+            /*验证密码*/
+            function checkPwd(password) {
+                /*获取提示框*/
+                var passwordMSG = document.getElementById("passwordMSG");
+                /*定义正则表达式*/
+                var reg = /^[a-zA-Z]\w{5,19}$/;
+                var flag = reg.test(password);
+                if ( !flag ) {
+                    passwordMSG.innerHTML = "<font color='red'>密码格式有误！</font>";
+                    Flag4 = false;
+                } else {
+                    passwordMSG.innerHTML = "<font color='green'><b>√</b></font>";
+                    Flag4 = true;
                 }
             }
-            return result;
-        }
-        var titleTmp = "<h3><a href=\"/s/?id={0}\">{1}</a></h3>"
-        var authTmp = "<p class=\"text-success\">{0}</p>"
-        var contentTmp = "<p>{0}</p>"
-        var docTmp = document.getElementById("doc");
-        var numDoc = {{.numberDoc}};
-        var docs = JSON.parse({{.docs}})
-        for(let i = 0; i < numDoc; i++) {
-            let titleStr = titleTmp.format(docs[i].Id, docs[i].Title);
-            let authStr = authTmp.format(docs[i].Auth);
-            let ContentStr = contentTmp.format(docs[i].Content);
-            docTmp.insertAdjacentHTML("beforebegin",titleStr)
-            docTmp.insertAdjacentHTML("beforebegin",authStr)
-            docTmp.insertAdjacentHTML("beforebegin",ContentStr)
-            docTmp.insertAdjacentHTML("beforebegin","<br>")
-        }
-    </script>
+
+            /*验证重复密码*/
+            var timeoutID;
+            function checkPwd2(pwd2) {
+                /*获取提示框*/
+                var mm2MSG = document.getElementById("mm2MSG");
+                /*获取第一个框输入的密码*/
+                var pwd1 = document.getElementById("password").value;
+                //对上次未完成的延时操作进行取消
+                clearTimeout(timeoutID);
+                //对于密码比对延迟500ms，避免频繁比对
+                timeoutID = setTimeout(function(){
+                    /*进行比对*/
+                    if(pwd1 !== pwd2){
+                        Flag5 = false;
+                        mm2MSG.innerHTML = "<font color='red'>两次输入的密码不一致！</font>";
+                    } else {
+                        Flag5 = true;
+                        mm2MSG.innerHTML = "<font color='green'><b>√</b></font>";
+                    }
+                },500);
+            }
+        </script>
     {{template "footer" }}
 {{end}}

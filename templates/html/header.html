@@ -11,4 +11,29 @@
     <title>{{.title}}</title>
 </head>
 <body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo01" aria-controls="navbarTogglerDemo01" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarTogglerDemo01">
+            <a class="navbar-brand" href="/">首页 </a>
+            <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+                <li class="nav-item">
+                    <div id="to_admin"></div>
+
+                </li>
+            </ul>
+            <div class="my-2 my-lg-0">
+                <a id="admin_button"></a>
+            </div>
+        </div>
+    </nav>
+    <script>
+        if ( {{.login}}) {
+            document.getElementById("admin_button").innerHTML = "<a href=\"/admin/logout\" class=\"btn btn-outline-primary mr-sm-2\">登出</a>"
+            document.getElementById("to_admin").innerHTML = "<a class=\"nav-link\" href=\"/admin\">ReEngine管理页面</a>"
+        } else {
+            document.getElementById("admin_button").innerHTML = "<a href=\"/admin/login\" class=\"btn btn-outline-primary mr-sm-2\">管理员登陆</a>"
+        }
+    </script>
 {{end}}

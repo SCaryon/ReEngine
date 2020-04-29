@@ -12,7 +12,7 @@ import (
 )
 
 
-func Docment(r *gin.Engine, c *gin.Context) {
+func DocmentInfo(r *gin.Engine, c *gin.Context) {
 	key := c.Keys[utils.IsLogin]
 	id := c.Query("id")
 	docId,_ := strconv.Atoi(id)
@@ -40,19 +40,28 @@ func SearchContent(r *gin.Engine, c *gin.Context) {
 		toHomePage(c)
 		return
 	}
+	var docs []Model.Relevance
 	log.Printf("search content:%s",content)
-	// 查找倒排索引
-	docId,seg,invert,err := Search.SearchInvert(content)
-	if err != nil {
-		log.Println("search invert failed",err)
-		toHomePage(c)
-		return
+	// todo redis缓存搜索数据，分页用 还未测试
+	tmpRes,err := utils.BigCache.Get(content)
+	if  err == nil && tmpRes != nil {
+		_ =json.Unmarshal(tmpRes,docs)
+
+	} else {
+		// 查找倒排索引
+		docId,seg,invert,err := Search.SearchInvert(content)
+		if err != nil {
+			log.Println("search invert failed",err)
+			toHomePage(c)
+			return
+		}
+		log.Printf("SearchInvert result:%v",docId)
+		// 相关性排序
+		docs = Search.RelevanceSort(docId,seg,invert)
+		log.Printf("RelevanceSort result:%v",docs)
+		docsJson,err := json.Marshal(docs)
+		_ = utils.BigCache.Set(content, docsJson)
 	}
-	log.Printf("SearchInvert result:%v",docId)
-	// 相关性排序
-	docs := Search.RelevanceSort(docId,seg,invert)
-	log.Printf("RelevanceSort result:%v",docs)
-	// todo redis缓存搜索数据，分页用
 	// 分页
 	offsetTmp,err := strconv.Atoi(offset)
 	if err != nil {

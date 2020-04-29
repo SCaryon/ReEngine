@@ -1,0 +1,53 @@
+{{define "register.html"}}
+    {{template "header" .}}
+
+    <div class="modal-dialog" style="margin-top: 5%;width: 350px">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title text-center" id="myModalLabel">注册新管理员</h4>
+            </div>
+            <form method="post" action="/admin/register" name="user_info">
+                <div class="modal-body" id = "model-body">
+                    <div class="form-group">
+                        <span>用户名<label style="color:red;">*</label></span>
+                        <input type="text" required class="form-control"placeholder="用户名" autocomplete="off" name="username" value="{{.username}}">
+                    </div>
+                    <div class="form-group">
+                        <span>密码<label style="color:red;">*</label> <font id="passwordMSG"></font></span>
+                        <input type="password" class="form-control" name="password" id="password" maxlength="20"  value="{{.password}}" required>
+                    </div>
+                    <div class="form-group">
+                        <span>确认密码<label style="color:red;">*</label> <font id="password2MSG"></font></span>
+                        <input oninput="checkPwd()" type="password" class="form-control" id="password2" maxlength="20" value="{{.password}}" required >
+                    </div>
+                    <br>
+                    <div class="form-group m-auto">
+                        <input class="btn btn-success form-control " type="submit" value="登录">
+                    </div>
+                    <br>
+                </div>
+            </form>
+
+        </div><!-- /.modal-content -->
+    </div>
+    {{template "footer" }}
+    <script>
+        /*验证重复密码*/
+        function checkPwd() {
+            /*获取第一个框输入的密码*/
+            var pwd1 = document.getElementById("password").value;
+            var pwd2 = document.getElementById("password2").value;
+            var mm2MSG = document.getElementById("password2MSG");
+            /*进行比对*/
+            if(pwd1 !== pwd2){
+                mm2MSG.innerHTML = "<font color='red'>两次输入的密码不一致！</font>";
+            } else {
+                mm2MSG.innerHTML = "<font color='green'><b>√</b></font>";
+            }
+        }
+        var message = {{.extra}}
+        if( message !== null ) {
+            alert(message)
+        }
+    </script>
+{{end}}

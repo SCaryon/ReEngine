@@ -54,7 +54,7 @@ func InitRoutes(r *gin.Engine) {
 		v1.GET("/logout", func(c *gin.Context) {
 			user.LogOut(r,c)
 		})
-		v1.POST("/register", func(c *gin.Context) {
+		v1.Any("/register", func(c *gin.Context) {
 			user.Register(r,c)
 		})
 		v1.POST("/submit", func(c *gin.Context) {
@@ -75,7 +75,7 @@ func InitRoutes(r *gin.Engine) {
 			search.SearchContent(r,c)
 		})
 		v2.GET("/doc", func(c *gin.Context) {
-			search.Docment(r,c)
+			search.DocmentInfo(r,c)
 		})
 	}
 }

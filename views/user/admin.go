@@ -33,6 +33,7 @@ func Manage(r *gin.Engine, c *gin.Context)  {
 			"docs"		: string(docJson),
 			"upload"	: c.Query("upload"),
 			"index"		: c.Query("index"),
+			"regSucc"	: c.Query("regSucc"),
 		})
 	}
 }
@@ -144,13 +145,26 @@ func Register(r *gin.Engine, c *gin.Context) {
 		toHomePage(c)
 		return
 	}
-	name := c.Query("username")
-	password := c.Query("password")
-	err := Model.AddUser(name,password)
+	username := c.DefaultPostForm("username","")
+	password := c.DefaultPostForm("password","")
+	if username == "" || password == "" {
+		c.HTML(http.StatusOK,"register.html",gin.H{
+			"title"			:	"Register",
+			"login"			: key,
+		})
+		return
+	}
+	err := Model.AddUser(username,password)
 	if err == nil {
-
+		c.Redirect(http.StatusFound,"/admin?regSucc=1")
 	} else {
-
+		c.HTML(http.StatusOK,"register.html",gin.H{
+			"title"			:	"Register",
+			"login"			: key,
+			"extra"			: err.Error(),
+			"username"		: username,
+			"password"		: password,
+		})
 	}
 }
 

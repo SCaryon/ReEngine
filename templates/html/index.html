@@ -1,9 +1,6 @@
 {{define "index.html"}}
     {{template "header" .}}
-    <nav class="navbar navbar-light bg-light">
-        <a href="/" class="navbar-brand">ReEngine</a>
-        <a id="admin_button"></a>
-    </nav>
+
     <div class="container-fluid">
         <div class="row" >
             <div class="col-md-4"></div>
@@ -19,13 +16,6 @@
         </div>
     </div>
         <a href="test" class="btn-outline-primary text-center">test</a>
-        <script>
-            if ( {{.login}}) {
-                document.getElementById("admin_button").innerHTML = "<a href=\"/admin\" class=\"btn btn-outline-primary mr-sm-2\">进入管理界面</a>"
-            } else {
-                document.getElementById("admin_button").innerHTML = "<a href=\"/admin/login\" class=\"btn btn-outline-primary mr-sm-2\">管理员登陆</a>"
-            }
-        </script>
-    {{template "footer" }}
 
+    {{template "footer" }}
 {{end}}
