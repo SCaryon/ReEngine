@@ -17,8 +17,10 @@ func main(){
 	// 中间件使用
 	r.Use(gin.Logger())
 	r.Use(gin.Recovery())
+	// 加载html模板
 	r.LoadHTMLGlob("templates/**/*")
-
+	// 加载静态资源
+	r.Static("/static", "./static")
 	// 初始化分词器
 	utils.InitSegment(utils.DictionaryPath)
 	// 初始化数据库

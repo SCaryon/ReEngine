@@ -1,21 +1,25 @@
 {{define "index.html"}}
     {{template "header" .}}
 
+
     <div class="container-fluid">
-        <div class="row" >
-            <div class="col-md-4"></div>
-            <div class="col-md-4" ><img hidefocus="true" id="s_lg_img_new" class="index-logo-srcnew" src="//www.baidu.com/img/bd_logo1.png" width="270" height="129" onerror="this.src='//www.baidu.com/img/bd_logo1.png';this.onerror=null;" usemap="#mp"></div>
-        </div>
-        <br>
         <div class="row">
-            <div class="col-md-2"></div>
-            <div class="col-md-8"><form action="/s" class="form-inline">
-                <input class="form-control" style="width: 75%" placeholder="输入搜索内容" type="text" name="content" autocomplete="on">
-                <input class="btn btn-primary" type="submit" value="搜索一下">
-            </form></div>
+            <div class="m-auto center-block" ><a href="/"><img src="../../static/logo.png" width="389" height="179" alt="ReEngine搜索引擎"></a></div>
+        </div>
+        <div class="input-group mb-3 col-md-6 m-auto">
+            <input type="text" class="form-control" id="content">
+            <div class="input-group-append">
+                <button class="btn btn-primary" type="button" onclick="search()">搜索一下</button>
+            </div>
         </div>
     </div>
         <a href="test" class="btn-outline-primary text-center">test</a>
 
-    {{template "footer" }}
+    {{template  "footer" }}
+    <script>
+        function search() {
+            var content = document.getElementById("content").value;
+            window.location.href = "/s?content="+content+"&offset=0"
+        }
+    </script>
 {{end}}
