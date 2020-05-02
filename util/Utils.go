@@ -6,6 +6,7 @@ import (
 	json "github.com/json-iterator/go"
 	"log"
 	"os"
+	"strconv"
 	"syscall"
 )
 
@@ -82,4 +83,18 @@ func Max(a,b int) int {
 	} else {
 		return a
 	}
+}
+func IntToFloat64(num int ) float64 {
+	strTmp := strconv.Itoa(num)
+	res, _ := strconv.ParseFloat(strTmp, 64)
+	return res
+}
+
+// 保证对于中文字符串的截取不会出现乱码
+func CutString(base string,left,right int) string {
+	tmpRune := []rune(base)
+	if left < 0 || len(tmpRune) <= right {
+		return base
+	}
+	return string(tmpRune[left:right])
 }

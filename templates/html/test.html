@@ -1,52 +1,29 @@
 {{define "test.html"}}
     {{template "header" .}}
-    <h3>登录 信息</h3>
-    <div>
-            <span>密码(6-20位以字母开头只能包含字母、数字、下划线)<label style="color:red;">*</label> <font id="passwordMSG"></font></span>
-            <input onblur="checkPwd(this.value)" type="password" name="password" id="password" maxlength="20" required >
-    </div>
-    <div>
-            <span>重复密码<label style="color:red;">*</label> <font id="mm2MSG"></font></span>
-            <input  oninput="checkPwd2(this.value)" form="other" type="password" id="mm2" maxlength="20" required >
-    </div>
-        <script>
-            /*验证密码*/
-            function checkPwd(password) {
-                /*获取提示框*/
-                var passwordMSG = document.getElementById("passwordMSG");
-                /*定义正则表达式*/
-                var reg = /^[a-zA-Z]\w{5,19}$/;
-                var flag = reg.test(password);
-                if ( !flag ) {
-                    passwordMSG.innerHTML = "<font color='red'>密码格式有误！</font>";
-                    Flag4 = false;
-                } else {
-                    passwordMSG.innerHTML = "<font color='green'><b>√</b></font>";
-                    Flag4 = true;
-                }
-            }
+    <link rel="stylesheet" href="../../static/editor.md/css/editormd.preview.css" />
+    <div id="test-markdown-view">
+        <!-- Server-side output Markdown text -->
+        <textarea style="display:none;"># 梦
 
-            /*验证重复密码*/
-            var timeoutID;
-            function checkPwd2(pwd2) {
-                /*获取提示框*/
-                var mm2MSG = document.getElementById("mm2MSG");
-                /*获取第一个框输入的密码*/
-                var pwd1 = document.getElementById("password").value;
-                //对上次未完成的延时操作进行取消
-                clearTimeout(timeoutID);
-                //对于密码比对延迟500ms，避免频繁比对
-                timeoutID = setTimeout(function(){
-                    /*进行比对*/
-                    if(pwd1 !== pwd2){
-                        Flag5 = false;
-                        mm2MSG.innerHTML = "<font color='red'>两次输入的密码不一致！</font>";
-                    } else {
-                        Flag5 = true;
-                        mm2MSG.innerHTML = "<font color='green'><b>√</b></font>";
-                    }
-                },500);
-            }
-        </script>
+​		似乎从小到达，一直有那么几个梦的形式在我睡觉的时候一直出现，并且一般是在中午或者下午。我一般不在这个时候睡觉，就是因为很多时候都会梦到让人不太开心的东西，并不是一些具体的事务，而是一些让人很别扭的意向。
+
+​		比如刚才，2019年7月18日 14:33:40，我从梦中醒来。梦见我在一个类似于补习班的地方，别人问我考研复习的如何之类的，而这个补习班却在一个城堡里，看起来非常有年头。这不是我第一个梦见这个地方，之前在初中或者高中的时候经常梦到，一些和我关系比较好的同学在一个补习班里上课，下课了大家就在城堡的走廊里聊天。虽然确实没有什么让人害怕的东西，但多次出现这种奇奇怪怪的东西本身就有一些让人害怕。
+
+​		还有一个梦境，我很久没有梦见过了，在这里只是顺嘴提一下，防止以后忘了。在我大概是小学的时候，或者是在这个时期之前。我经常会梦到我在一个空旷的地方搬运着大石头，一刻不停，然而石头越来越大，我终于撑不住被压死了。就是这样，不过很久没有梦到过这些东西了。
+        </textarea>
+    </div>
+    <script src="../../static/jQuery/jquery-3.4.1.min.js"></script>
+    <script src="../../static/editor.md/editormd.js"></script>
+    <script src="../../static/editor.md/lib/marked.min.js"></script>
+    <script src="../../static/editor.md/lib/prettify.min.js"></script>
+    <script type="text/javascript">
+        $(function() {
+            var testView = editormd.markdownToHTML("test-markdown-view", {
+                // markdown : "[TOC]\n### Hello world!\n## Heading 2", // Also, you can dynamic set Markdown text
+                // htmlDecode : true,  // Enable / disable HTML tag encode.
+                // htmlDecode : "style,script,iframe",  // Note: If enabled, you should filter some dangerous HTML tags for website security.
+            });
+        });
+    </script>
     {{template "footer" }}
 {{end}}

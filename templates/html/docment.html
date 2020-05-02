@@ -1,12 +1,15 @@
 {{define "docment.html"}}
     {{template "no-index-header" .}}
+    <link rel="stylesheet" href="../../static/editor.md/css/editormd.preview.css" />
     <div class="container-fluid">
         <div class="row">
             <!--显示文档信息-->
             <div class="col-md-8 ">
-                <div><h4 class="table-primary">{{.doc_id}}</h4></div>
-                <div id="doc"></div>
                 <!--js根据参数在指定位置插入html-->
+                <div id="test-markdown-view">
+                    <textarea style="display:none;" id="doc_content">
+                    </textarea>
+                </div>
             </div>
 
             <div class="col-md-4 ant-divider-vertical">
@@ -37,18 +40,28 @@
             }
             return result;
         }
-        var titleTmp = "<h3><a href=\"/s/doc/?id={0}\">{1}</a></h3>"
-        var authTmp = "<p class=\"text-success\">{0}</p>"
-        var contentTmp = "<p>{0}</p>"
-        var docTmp = document.getElementById("doc");
+    </script>
+    <script>
+        var docContetnTmp = document.getElementById("doc_content");
         var doc = JSON.parse({{.doc}})
-        let titleStr = titleTmp.format(doc.Id, doc.Title);
-        let authStr = authTmp.format(doc.Auth);
-        let ContentStr = contentTmp.format(doc.Content);
-        docTmp.insertAdjacentHTML("beforebegin",titleStr)
-        docTmp.insertAdjacentHTML("beforebegin",authStr)
-        docTmp.insertAdjacentHTML("beforebegin",ContentStr)
-        docTmp.insertAdjacentHTML("beforebegin","<br>")
+        //let authStr = authTmp.format(doc.Auth);
+        let ContentStr = doc.Content;
+        docContetnTmp.insertAdjacentHTML("afterbegin",ContentStr)
+
+    </script>
+
+    <script src="../../static/jQuery/jquery-3.4.1.min.js"></script>
+    <script src="../../static/editor.md/editormd.js"></script>
+    <script src="../../static/editor.md/lib/marked.min.js"></script>
+    <script src="../../static/editor.md/lib/prettify.min.js"></script>
+    <script type="text/javascript">
+        $(function() {
+            var testView = editormd.markdownToHTML("test-markdown-view", {
+                // markdown : "[TOC]\n### Hello world!\n## Heading 2", // Also, you can dynamic set Markdown text
+                // htmlDecode : true,  // Enable / disable HTML tag encode.
+                // htmlDecode : "style,script,iframe",  // Note: If enabled, you should filter some dangerous HTML tags for website security.
+            });
+        });
     </script>
     {{template "footer" }}
 {{end}}

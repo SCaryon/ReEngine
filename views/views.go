@@ -1,11 +1,9 @@
 package views
 
 import (
-	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"log"
 	"my_go/ReEngine/MiddleWare"
-	"my_go/ReEngine/Model"
 	utils "my_go/ReEngine/util"
 	"my_go/ReEngine/views/search"
 	"my_go/ReEngine/views/user"
@@ -19,16 +17,8 @@ func InitRoutes(r *gin.Engine) {
 	r.Use(MiddleWare.AuthMiddleWare)
 	r.GET("/test",func(c *gin.Context) {
 		key := c.Keys[utils.IsLogin]
-		var res []Model.Article
-		res = append(res,Model.Article{Title:"test1",Auth:"SCaryon",Content:"testContext1"})
-		res = append(res,Model.Article{Title:"test2",Auth:"SCaryon",Content:"testContext2"})
-		docJson, _ := json.Marshal(res)
-		log.Println("docjson : ",string(docJson))
 		c.HTML(http.StatusOK, "test.html",gin.H{
 			"login"		: key,
-			"numberDoc"	: len(res),
-			"docs"		: string(docJson),
-			"upload"	: c.Query("status"),
 		})
 	})
 
@@ -63,7 +53,7 @@ func InitRoutes(r *gin.Engine) {
 		v1.POST("/delete", func(c *gin.Context) {
 			user.DeleteDoc(r,c)
 		})
-		v1.GET("/update",func(c *gin.Context) {
+		v1.GET("/update_index",func(c *gin.Context) {
 			user.UpdateIndex(r,c)
 		})
 	}

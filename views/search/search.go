@@ -45,7 +45,8 @@ func SearchContent(r *gin.Engine, c *gin.Context) {
 	// todo redis缓存搜索数据，分页用 还未测试
 	tmpRes,err := utils.BigCache.Get(content)
 	if  err == nil && tmpRes != nil {
-		_ =json.Unmarshal(tmpRes,docs)
+		_ =json.Unmarshal(tmpRes,&docs)
+		log.Printf("search %s,use bigcache,res=%v",content,docs)
 
 	} else {
 		// 查找倒排索引
@@ -58,9 +59,15 @@ func SearchContent(r *gin.Engine, c *gin.Context) {
 		log.Printf("SearchInvert result:%v",docId)
 		// 相关性排序
 		docs = Search.RelevanceSort(docId,seg,invert)
-		log.Printf("RelevanceSort result:%v",docs)
 		docsJson,err := json.Marshal(docs)
-		_ = utils.BigCache.Set(content, docsJson)
+		if err != nil {
+			log.Fatal(err)
+		}
+		log.Printf("RelevanceSort result:%v",docs)
+		err = utils.BigCache.Set(content, docsJson)
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
 	// 分页
 	offsetTmp,err := strconv.Atoi(offset)

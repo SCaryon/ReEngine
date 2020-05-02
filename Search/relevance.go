@@ -25,16 +25,20 @@ func RelevanceSort(docId []int,segs []string,invert map[string]int) []Model.Rele
 	dataNum, _ := Model.CountDocs()
 	// 计算TF-IDF
 	var weight float64
-	for _,it := range resp {
+	for index,doc := range resp {
 		weight = 0
-		_ = it
 		for _,seg := range segs {
-			weight += getTF(seg,it)*getIDF(seg, invert, dataNum)
+			numTF := getTF(seg,doc)
+			numIDF := getIDF(seg, invert, dataNum)
+			weight += numTF*numIDF
 		}
-		it.Weight = weight
+		resp[index].Weight = weight
 	}
 	// 按权重大小对于结果进行排序
 	sort.Sort(Model.DocSlice(resp))
+	for index,doc := range resp {
+		resp[index].Content = utils.CutString(doc.Content,0,100)
+	}
 	return resp
 }
 
@@ -52,13 +56,16 @@ func getTF(seg string,doc Model.Relevance) float64 {
 		if it == seg {
 			times += 1
 		}
+		log.Print(seg,it,times)
+
 	}
-	res = float64(times / all)
+	res = utils.IntToFloat64(times) / utils.IntToFloat64(all)
+	log.Print(res)
 	return res
 }
 
 func getIDF(seg string, invert map[string]int, dataNum int) float64 {
 	var res float64
-	res = math.Log(float64(dataNum / (invert[seg] + 1)))
+	res = math.Log(utils.IntToFloat64(dataNum) / utils.IntToFloat64(invert[seg] + 1))
 	return res
 }
