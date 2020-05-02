@@ -11,17 +11,17 @@ import (
 )
 
 const (
-	DBDocment = "docment"						// 文档数据
-	DBInvertDoc = "invert_index"				// 倒排索引
-	DBUsers = "users"							// 用户表
-	DocPath = "tmp/docment/"					// 临时文档路径
-	StopWordPath = "static/StopWord.txt"		// 停用词路径
-	DictionaryPath = "static/Dictionary.txt"	// 停用词路径
-	DocPageLimit = 10								// 一页的文档数量限制
-	ToKenKey = "4kk1HgVV3koDM1L0"				// ToKen
-	CookieKey = "ReEngine_token"				// cookie key
-	IsLogin = "ReEngine_login"					// 判断是否登陆
-	UpdateIndexSpec = "0 0 3 * * ?"				// 更新索引的定时任务参数，每天3天开始更新
+	DBDocument      = "document"               // 文档数据
+	DBInvertDoc     = "invert_index"          // 倒排索引
+	DBUsers         = "users"                 // 用户表
+	DocPath         = "tmp/document/"          // 临时文档路径
+	StopWordPath    = "static/StopWord.txt"   // 停用词路径
+	DictionaryPath  = "static/Dictionary.txt" // 停用词路径
+	DocPageLimit    = 10                      // 一页的文档数量限制
+	ToKenKey        = "4kk1HgVV3koDM1L0"      // ToKen
+	CookieKey       = "ReEngine_token"        // cookie key
+	IsLogin         = "ReEngine_login"        // 判断是否登陆
+	UpdateIndexSpec = "0 0 3 * * ?"           // 更新索引的定时任务参数，每天3天开始更新
 )
 
 func StringToSlice(context string) []int {

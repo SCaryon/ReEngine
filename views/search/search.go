@@ -12,7 +12,7 @@ import (
 )
 
 
-func DocmentInfo(r *gin.Engine, c *gin.Context) {
+func DocumentInfo(r *gin.Engine, c *gin.Context) {
 	key := c.Keys[utils.IsLogin]
 	id := c.Query("id")
 	docId,_ := strconv.Atoi(id)
@@ -22,8 +22,8 @@ func DocmentInfo(r *gin.Engine, c *gin.Context) {
 		toHomePage(c)
 		return
 	}
-	c.HTML(http.StatusOK,"docment.html",gin.H{
-		"title"		: "docment",
+	c.HTML(http.StatusOK,"document.html",gin.H{
+		"title"		: "document",
 		"login"		: key,
 		"doc_id"	: docId,
 		"doc"		: string(docJson),
@@ -50,13 +50,13 @@ func SearchContent(r *gin.Engine, c *gin.Context) {
 
 	} else {
 		// 查找倒排索引
-		docId,seg,invert,err := Search.SearchInvert(content)
+		docId,seg,invert,err := Search.GetInvert(content)
 		if err != nil {
 			log.Println("search invert failed",err)
 			toHomePage(c)
 			return
 		}
-		log.Printf("SearchInvert result:%v",docId)
+		log.Printf("GetInvert result:%v",docId)
 		// 相关性排序
 		docs = Search.RelevanceSort(docId,seg,invert)
 		docsJson,err := json.Marshal(docs)

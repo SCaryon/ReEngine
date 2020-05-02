@@ -9,6 +9,8 @@ import (
 	"my_go/ReEngine/Model"
 	utils "my_go/ReEngine/util"
 	"net/http"
+	"strconv"
+	"time"
 )
 
 func Manage(r *gin.Engine, c *gin.Context)  {
@@ -72,6 +74,20 @@ func DeleteDoc(r *gin.Engine, c *gin.Context) {
 		toHomePage(c)
 		return
 	}
+	id := c.Query("doc_id")
+	if id == "" {
+		toHomePage(c)
+		return
+	}
+	docId,_ := strconv.Atoi(id)
+	err := Model.DeleteDoc(docId)
+	if err != nil {
+		log.Printf("Delete doc failed,%v",err)
+		webStr := fmt.Sprintf("/s/doc?id=%d",docId)
+		c.Redirect(http.StatusFound,webStr)
+	} else {
+		c.Redirect(http.StatusFound,"/admin")
+	}
 }
 
 func UpdateIndex(r *gin.Engine, c *gin.Context) {
@@ -83,6 +99,59 @@ func UpdateIndex(r *gin.Engine, c *gin.Context) {
 	}
 	go Engine.UpdateIndex()
 	c.Redirect(http.StatusFound,"/admin?index=1")
+
+}
+
+// 对于文档的修改，采用删除旧文档然后添加新文档的方式进行
+func EditDocument(r *gin.Engine,c *gin.Context) {
+	key := c.Keys[utils.IsLogin]
+	if key == false {
+		log.Println("the user is not admin,can not edit document")
+		toHomePage(c)
+		return
+	}
+	id := c.Query("doc_id")
+	if id == "" {
+		toHomePage(c)
+		return
+	}
+	docId,_ := strconv.Atoi(id)
+	isEditError := c.Query("status")
+	title := c.DefaultPostForm("title","")
+	auth := c.DefaultPostForm("auth","")
+	content := c.DefaultPostForm("content","")
+	// 访问修改页面
+	if content == "" && title == "" && auth == "" {
+		docs,_ := Model.GetDocByIds([]int{docId})
+		warn := ""
+		if isEditError == "1" {
+			warn = "网站打瞌睡了，请稍后再试"
+		}
+		c.HTML(http.StatusOK,"edit.html",gin.H{
+			"title"			: "Edit",
+			"login"			: key,
+			"doc_id"		: docId,
+			"doc_title"		: docs[0].Title,
+			"doc_content"	: docs[0].Content,
+			"doc_auth"		: docs[0].Auth,
+			"warn"			: warn,
+		})
+	}
+	// 创建修改之后的文章对象
+	var afterArticle Model.Article
+	afterArticle.Title = title
+	afterArticle.Auth = auth
+	afterArticle.Content = content
+	afterArticle.CreateTime = int(time.Now().Unix())
+	log.Printf("title:%s,auth:%s,content:%s",title,auth,content)
+	// 提交修改请求
+	err := Model.UpdateDoc(docId, afterArticle)
+	if err != nil {
+		webStr := fmt.Sprintf("/s/doc/?id=%d",docId)
+		c.Redirect(http.StatusFound,webStr)
+	}
+	webStr := fmt.Sprintf("/admin/doc_edit/?doc_id=%d&&status=1",docId)
+	c.Redirect(http.StatusFound,webStr)
 
 }
 

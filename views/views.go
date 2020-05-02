@@ -50,11 +50,14 @@ func InitRoutes(r *gin.Engine) {
 		v1.POST("/submit", func(c *gin.Context) {
 			user.SubmitDoc(r,c)
 		})
-		v1.POST("/delete", func(c *gin.Context) {
+		v1.GET("/delete", func(c *gin.Context) {
 			user.DeleteDoc(r,c)
 		})
 		v1.GET("/update_index",func(c *gin.Context) {
 			user.UpdateIndex(r,c)
+		})
+		v1.Any("/doc_edit",func(c *gin.Context) {
+			user.EditDocument(r,c)
 		})
 	}
 
@@ -65,7 +68,7 @@ func InitRoutes(r *gin.Engine) {
 			search.SearchContent(r,c)
 		})
 		v2.GET("/doc", func(c *gin.Context) {
-			search.DocmentInfo(r,c)
+			search.DocumentInfo(r,c)
 		})
 	}
 }

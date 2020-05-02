@@ -1,0 +1,74 @@
+{{define "document.html"}}
+    {{template "no-index-header" .}}
+    <div class="container-fluid">
+        <div class="row">
+            <!--显示文档信息-->
+            <div class="col-md-8 ">
+                <!--js根据参数在指定位置插入html-->
+                <div id="test-markdown-view">
+                    <textarea style="display:none;" id="doc_content">
+                    </textarea>
+                </div>
+            </div>
+
+            <div class="col-md-4 ant-divider-vertical">
+                <!--文档相关信息展示-->
+                <div class="modal-dialog" style="margin-top: 5%;width: 350px">
+                    <div class="modal-content">
+                        <div class="modal-header"><h4 class="modal-title text-center">文档信息</h4></div>
+                        <br><label id="auth">上传者: </label><br>
+                        <label id="create_time">上传时间: </label>
+                    </div>
+                </div>
+                <!--管理员功能-->
+                <div class="modal-dialog" id="manage" style="margin-top: 5%;width: 350px"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../../static/jQuery/jquery-3.4.1.min.js"></script>
+    <script src="../../static/editor.md/editormd.js"></script>
+    <script src="../../static/editor.md/lib/marked.min.js"></script>
+    <script src="../../static/editor.md/lib/prettify.min.js"></script>
+    <script src="../../static/myJs/time_trans.js"></script>
+    <script>
+        var docContentTmp = document.getElementById("doc_content");
+        var doc = JSON.parse({{.doc}});
+        var docAuth = document.getElementById("auth");
+        var docTime = document.getElementById("create_time");
+        let ContentStr = doc.Content;
+        docContentTmp.insertAdjacentHTML("afterbegin",ContentStr);
+        docAuth.insertAdjacentHTML("beforeend",doc.Auth);
+        docTime.insertAdjacentHTML("beforeend",formatTime(doc.CreateTime));
+
+        if ( {{.login}}) {
+            console.log("is login")
+            var manage = document.getElementById("manage");
+            var insertHtml = "                    <div class=\"modal-content\">\n" +
+                "                        <div class=\"modal-header\"><h4 class=\"modal-title text-center\">文档管理</h4></div>\n" +
+                "                        <div class=\"modal-body\">\n" +
+                "                            <!--编辑文档-->\n" +
+                "                            <a href=\"/admin/doc_edit?doc_id={{.doc_id}}\">" +
+                "                                <button class=\"btn-info btn-lg form-control\">编辑文档</button>\n" +
+                "                            </a>\n" +
+                "                            <br>\n" +
+                "                            <!--删除文档-->\n" +
+                "                            <a href=\"/admin/delete?doc_id={{.doc_id}}\">\n" +
+                "                                <button class=\"btn-danger btn-lg form-control\" onclick=\"return confirm('请确认是否删除此文档')\">删除文档</button>\n" +
+                "                            </a>\n" +
+                "                        </div>\n" +
+                "                    </div>";
+            manage.insertAdjacentHTML("afterbegin",insertHtml)
+        }
+    </script>
+    <script type="text/javascript">
+        $(function() {
+            var testView = editormd.markdownToHTML("test-markdown-view", {
+                // markdown : "[TOC]\n### Hello world!\n## Heading 2", // Also, you can dynamic set Markdown text
+                // htmlDecode : true,  // Enable / disable HTML tag encode.
+                // htmlDecode : "style,script,iframe",  // Note: If enabled, you should filter some dangerous HTML tags for website security.
+            });
+        });
+    </script>
+    {{template "footer" }}
+{{end}}

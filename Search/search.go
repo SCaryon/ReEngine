@@ -6,7 +6,7 @@ import (
 	"my_go/ReEngine/util"
 )
 // 处理过程：分词，将结果分别在数据库中寻找对应的doc_id，然后求交
-func SearchInvert(content string) ([]int,[]string,map[string]int,error){
+func GetInvert(content string) ([]int,[]string,map[string]int,error){
 	// 分词
 	seg := utils.SegmentContent(content)
 	log.Printf("SegmentContent Result:%v",seg)

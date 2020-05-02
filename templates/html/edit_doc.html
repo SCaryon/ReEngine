@@ -1,4 +1,4 @@
-{{define "test.html"}}
+{{define "edit.html"}}
     {{template "no-index-header" .}}
     <link rel="stylesheet" href="../../static/editor.md/css/editormd.css" />
     <br>
@@ -8,18 +8,18 @@
                 <div class="input-group-prepend">
                     <span class="input-group-text">标题</span>
                 </div>
-                <input type="text" id="doc_title" class="form-control" required>
+                <input type="text" id="doc_title" class="form-control" value="{{.doc_title}}" required>
             </div>
         </div>
     </div>
     <div class="row">
-        <div class="col-md-2 m-auto col-sm-1">
+        <div class="col-md-2 m-auto ">
             <div class="input-group mb-3">
                 <div class="input-group-prepend">
                     <span class="input-group-text">上传人</span>
                 </div>
-                <input type="text" id="doc_auth" class="form-control" required>
-                <div class="input-group-append col-sm-1">
+                <input type="text" id="doc_auth" class="form-control" value="{{.doc_auth}}" required>
+                <div class="input-group-append ">
                     <button class="btn btn-primary btn-doc-submit">提交更改</button>
                 </div>
             </div>
@@ -28,15 +28,20 @@
     </div>
 
     <div id="doc-editor">
-        <textarea class="editormd-markdown-textarea" name="$id-markdown-doc"></textarea>
-        <textarea style="display:none;">### 关于 Editor.md
-
-**Editor.md** 是一款开源的、可嵌入的 Markdown 在线编辑器（组件），基于 CodeMirror、jQuery 和 Marked 构建。
-            </textarea>
+        <textarea class="editormd-markdown-textarea" name="$id-markdown-doc" id="doc_content"></textarea>
     </div>
 
     <script src="../../static/jQuery/jquery-3.4.1.min.js"></script>
     <script src="../../static/editor.md/editormd.min.js"></script>
+    <script src="../../static/myJs/time_trans.js"></script>
+    <script>
+        var docContentTmp = document.getElementById("doc_content");
+        docContentTmp.insertAdjacentHTML("afterbegin",{{.doc_content}});
+        var message = {{.warn}};
+        if( message !== "" ) {
+            alert(message)
+        }
+    </script>
     <script type="text/javascript">
         var editor
         $(function() {

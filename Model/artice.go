@@ -19,10 +19,10 @@ type Article struct {
 
 func GetAllDocs() ([]Article,error) {
 	var resp []Article
-	queryStr := fmt.Sprintf("select id,title,auth,context,create_time from %s",utils.DBDocment)
+	queryStr := fmt.Sprintf("select id,title,auth,context,create_time from %s",utils.DBDocument)
 	rows,err := DB.Query(queryStr)
 	if err != nil || rows == nil {
-		log.Printf("use %s table ,query = %s failed\n",utils.DBDocment,queryStr)
+		log.Printf("use %s table ,query = %s failed\n",utils.DBDocument,queryStr)
 		return nil,err
 	}
 	log.Println("queryStr",queryStr)
@@ -45,13 +45,37 @@ func GetAllDocs() ([]Article,error) {
 	return  resp,nil
 }
 
+func DeleteDoc(docId int) error {
+	updateStr := fmt.Sprintf("update %s set is_delete=1 where id=?",utils.DBDocument)
+	_, err := DB.Exec(updateStr, docId)
+	if err != nil {
+		log.Fatal(err)
+		return err
+	}
+	return nil
+}
+
+func UpdateDoc(id int,doc Article) error {
+	// 对于修改文章的操作，先删除原有的文档，再插入新的内容
+	log.Printf("UpdateDoc %d,doc : %s",id,doc.Title)
+	err := DeleteDoc(id)
+	if err != nil {
+		return err
+	}
+	_,err = InsertDoc(doc)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func GetDocByIds(ids []int) ([]Article,error){
 	var resp []Article
 	for _,id := range ids {
-		queryStr := fmt.Sprintf("select id,title,auth,context,create_time from %s where id=%d",utils.DBDocment,id)
+		queryStr := fmt.Sprintf("select id,title,auth,context,create_time from %s where id=%d and is_delete=0",utils.DBDocument,id)
 		rows,err := DB.Query(queryStr)
 		if err != nil || rows == nil {
-			log.Printf("use %s table ,query = %s failed\n",utils.DBDocment,queryStr)
+			log.Printf("use %s table ,query = %s failed\n",utils.DBDocument,queryStr)
 			return nil,err
 		}
 		log.Println("queryStr",queryStr)
@@ -76,7 +100,7 @@ func GetDocByIds(ids []int) ([]Article,error){
 }
 
 func CountDocs() (int,error) {
-	queryStr := fmt.Sprintf("select count(id) from %s",utils.DBDocment)
+	queryStr := fmt.Sprintf("select count(id) from %s where is_delete=0",utils.DBDocument)
 	rows,err := DB.Query(queryStr)
 	if err != nil || rows == nil {
 		log.Printf("count lines failed ,query:%s",queryStr)
@@ -117,7 +141,7 @@ func GetAndReadFiles(filePath string) []Article {
 }
 
 func InsertDoc(article Article) (int,error) {
-	queryStr := fmt.Sprintf("INSERT INTO %s(title,auth,context,create_time)VALUES (?,?,?,?)",utils.DBDocment)
+	queryStr := fmt.Sprintf("INSERT INTO %s(title,auth,context,create_time)VALUES (?,?,?,?)",utils.DBDocument)
 	result,err := DB.Exec(queryStr,article.Title,article.Auth,article.Content,article.CreateTime)
 	if err != nil {
 		log.Printf("insert failed,err=%v",err)
