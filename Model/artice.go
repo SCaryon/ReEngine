@@ -1,10 +1,10 @@
 package Model
 
 import (
+	utils "ReEngine/util"
 	"fmt"
 	"io/ioutil"
 	"log"
-	utils "my_go/ReEngine/util"
 	"os"
 	"strings"
 )
@@ -111,7 +111,7 @@ func CountDocs() (int,error) {
 func GetAndReadFiles(filePath string) []Article {
 	var articles []Article
 	goPath := os.Getenv("GOPATH")
-	path := fmt.Sprintf("%s/src/my_go/ReEngine/%s", goPath, filePath)
+	path := fmt.Sprintf("%s/src/ReEngine/%s", goPath, filePath)
 	files, err := ioutil.ReadDir(path)
 	if err != nil {
 		panic(err)

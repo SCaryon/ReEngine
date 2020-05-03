@@ -1,10 +1,10 @@
 package Engine
 
 import (
+	"ReEngine/Model"
+	utils "ReEngine/util"
 	"fmt"
 	"log"
-	"my_go/ReEngine/Model"
-	utils "my_go/ReEngine/util"
 	"os"
 	"testing"
 )
@@ -12,10 +12,10 @@ import (
 
 func TestInsertDoc(t *testing.T) {
 	goPath := os.Getenv("GOPATH")
-	path := fmt.Sprintf("%s/src/my_go/ReEngine/%s",goPath,utils.DictionaryPath)
+	path := fmt.Sprintf("%s/src/ReEngine/%s",goPath,utils.DictionaryPath)
 	Model.InitDB()
 	utils.InitSegment(path)
-	path = fmt.Sprintf("%s/src/my_go/ReEngine/%s",goPath,utils.StopWordPath)
+	path = fmt.Sprintf("%s/src/ReEngine/%s",goPath,utils.StopWordPath)
 	err := utils.LoadStopWord(path)
 	if err != nil {
 		log.Fatal(err)

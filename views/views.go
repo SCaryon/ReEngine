@@ -1,12 +1,12 @@
 package views
 
 import (
+	"ReEngine/MiddleWare"
+	utils "ReEngine/util"
+	"ReEngine/views/search"
+	"ReEngine/views/user"
 	"github.com/gin-gonic/gin"
 	"log"
-	"my_go/ReEngine/MiddleWare"
-	utils "my_go/ReEngine/util"
-	"my_go/ReEngine/views/search"
-	"my_go/ReEngine/views/user"
 	"net/http"
 )
 

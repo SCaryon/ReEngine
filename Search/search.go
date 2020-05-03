@@ -1,9 +1,9 @@
 package Search
 
 import (
+	"ReEngine/Model"
+	"ReEngine/util"
 	"log"
-	"my_go/ReEngine/Model"
-	"my_go/ReEngine/util"
 )
 // 处理过程：分词，将结果分别在数据库中寻找对应的doc_id，然后求交
 func GetInvert(content string) ([]int,[]string,map[string]int,error){

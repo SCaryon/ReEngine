@@ -1,10 +1,10 @@
 package Search
 
 import (
+	"ReEngine/Model"
+	"ReEngine/util"
 	"log"
 	"math"
-	"my_go/ReEngine/Model"
-	"my_go/ReEngine/util"
 	"sort"
 )
 

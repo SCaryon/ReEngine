@@ -1,7 +1,7 @@
 package utils
 
 import (
-	"my_go/ReEngine/Model"
+	"ReEngine/Model"
 	"testing"
 )
 

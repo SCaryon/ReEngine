@@ -1,13 +1,13 @@
 package user
 
 import (
+	"ReEngine/Engine"
+	"ReEngine/Model"
+	utils "ReEngine/util"
 	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"log"
-	"my_go/ReEngine/Engine"
-	"my_go/ReEngine/Model"
-	utils "my_go/ReEngine/util"
 	"net/http"
 	"strconv"
 	"strings"

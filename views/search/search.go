@@ -1,12 +1,12 @@
 package search
 
 import (
+	"ReEngine/Model"
+	"ReEngine/Search"
+	utils "ReEngine/util"
 	"github.com/gin-gonic/gin"
 	json "github.com/json-iterator/go"
 	"log"
-	"my_go/ReEngine/Model"
-	"my_go/ReEngine/Search"
-	utils "my_go/ReEngine/util"
 	"net/http"
 	"strconv"
 )

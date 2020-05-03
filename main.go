@@ -1,11 +1,11 @@
 package main
 
 import (
+	"ReEngine/Engine"
+	"ReEngine/Model"
+	utils "ReEngine/util"
+	"ReEngine/views"
 	"github.com/gin-gonic/gin"
-	"my_go/ReEngine/Engine"
-	"my_go/ReEngine/Model"
-	"my_go/ReEngine/util"
-	"my_go/ReEngine/views"
 )
 
 func main(){

@@ -1,10 +1,10 @@
 package Engine
 
 import (
+	"ReEngine/Model"
+	utils "ReEngine/util"
 	"fmt"
 	"log"
-	"my_go/ReEngine/Model"
-	utils "my_go/ReEngine/util"
 	"os"
 )
 

@@ -1,10 +1,10 @@
 package Model
 
 import (
+	utils "ReEngine/util"
 	"fmt"
 	"github.com/pkg/errors"
 	"log"
-	utils "my_go/ReEngine/util"
 )
 
 type User struct{

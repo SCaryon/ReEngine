@@ -69,7 +69,7 @@ func WriteFile(filePath string,content []string) {
 
 func GetPath() string {
 	goPath := os.Getenv("GOPATH")
-	return fmt.Sprintf("%s/src/my_go/ReEngine",goPath)
+	return fmt.Sprintf("%s/src/ReEngine",goPath)
 }
 
 func Min(a,b int) int {

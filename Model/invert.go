@@ -1,9 +1,9 @@
 package Model
 
 import (
+	utils "ReEngine/util"
 	"fmt"
 	"log"
-	utils "my_go/ReEngine/util"
 )
 
 type Invert struct {

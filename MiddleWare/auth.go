@@ -1,9 +1,9 @@
 package MiddleWare
 
 import (
+	"ReEngine/Model"
+	utils "ReEngine/util"
 	"github.com/gin-gonic/gin"
-	"my_go/ReEngine/Model"
-	utils "my_go/ReEngine/util"
 )
 
 func AuthMiddleWare(c *gin.Context) {
