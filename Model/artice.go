@@ -6,6 +6,7 @@ import (
 	"log"
 	utils "my_go/ReEngine/util"
 	"os"
+	"strings"
 )
 
 type Article struct {
@@ -19,7 +20,7 @@ type Article struct {
 
 func GetAllDocs() ([]Article,error) {
 	var resp []Article
-	queryStr := fmt.Sprintf("select id,title,auth,context,create_time from %s",utils.DBDocument)
+	queryStr := fmt.Sprintf("select id,title,auth,context,create_time from %s where is_delete=0",utils.DBDocument)
 	rows,err := DB.Query(queryStr)
 	if err != nil || rows == nil {
 		log.Printf("use %s table ,query = %s failed\n",utils.DBDocument,queryStr)
@@ -37,7 +38,7 @@ func GetAllDocs() ([]Article,error) {
 		if err != nil {
 			log.Printf("get data failed, error:[%v]\n", err.Error())
 		}
-		tmpArticle := Article{Id:tmpId,Title:tmpTitle,Content:tmpContent,CreateTime:tmpTime}
+		tmpArticle := Article{Id:tmpId, Auth:tmpAuth, Title:tmpTitle, Content:tmpContent, CreateTime:tmpTime}
 		// 存储分词结果
 		// todo 从redis里面拿到文章的分词的信息
 		resp = append(resp,tmpArticle)
@@ -90,7 +91,7 @@ func GetDocByIds(ids []int) ([]Article,error){
 			if err != nil {
 				log.Printf("get data failed, error:[%v]\n", err.Error())
 			}
-			tmpArticle := Article{Id:tmpId,Title:tmpTitle,Content:tmpContent,CreateTime:tmpTime}
+			tmpArticle := Article{Id:tmpId, Auth:tmpAuth, Title:tmpTitle, Content:tmpContent, CreateTime:tmpTime}
 			// 存储分词结果
 			// todo 从redis里面拿到文章的分词的信息
 			resp = append(resp,tmpArticle)
@@ -126,7 +127,7 @@ func GetAndReadFiles(filePath string) []Article {
 		panic(err)
 	}
 	for _, file := range files {
-		fmt.Println(file.Name())
+
 		txt, err := ioutil.ReadFile(path + file.Name())
 		if err != nil {
 			panic(err)
@@ -134,7 +135,16 @@ func GetAndReadFiles(filePath string) []Article {
 		// 将字节流转换为字符串
 		content := string(txt)
 		createTime := utils.GetFileCreateTime(file)
-		articles = append(articles, Article{Title: file.Name(), Content: content, CreateTime: createTime})
+		strTmp := strings.Split(file.Name(),".")
+		lenTmp := len(strTmp)
+		fileName := ""
+		auth := strTmp[lenTmp-1]
+		for index := 0;index < lenTmp-1;index++ {
+			fileName = fileName + strTmp[index]
+		}
+		fmt.Println("get tmp file:",file.Name())
+		fmt.Printf("file info title:%s,auth:%s",fileName,auth)
+		articles = append(articles, Article{Title: fileName,Auth:auth, Content: content, CreateTime: createTime})
 
 	}
 	return articles

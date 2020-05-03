@@ -22,7 +22,9 @@ const (
 	CookieKey       = "ReEngine_token"        // cookie key
 	IsLogin         = "ReEngine_login"        // 判断是否登陆
 	UpdateIndexSpec = "0 0 3 * * ?"           // 更新索引的定时任务参数，每天3天开始更新
+
 )
+var FileSuffixs	= []string{".md",".txt",".pdf"}
 
 func StringToSlice(context string) []int {
 	var resp = make([]int,0)

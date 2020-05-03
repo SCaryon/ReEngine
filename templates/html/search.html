@@ -1,12 +1,12 @@
 {{define "search.html"}}
     {{template "no-index-header" .}}
-    <div>result={{.result}}</div>
     <div class="container-fluid">
         <div class="row">
             <!--显示文档信息-->
             <div class="col-md-8 ">
-                <div><h4 class="table-primary">搜索结果</h4></div>
-                <div class="text-secondary">{{.numberDoc}}</div>
+                <br>
+                <div class="text-secondary">为您找到相关结果：{{.numberDoc}} 篇相关文档</div>
+                <br>
                 <div id="doc"></div>
                 <!--js根据参数在指定位置插入html-->
             </div>
@@ -38,21 +38,21 @@
                 }
         }
             return result;
-        }
-        var titleTmp = "<h3><a href=\"/s/doc/?id={0}\">{1}</a></h3>"
-        var authTmp = "<p class=\"text-success\">{0}</p>"
-        var contentTmp = "<p>{0}</p>"
+        };
+        var titleTmp = "<h3><a href=\"/s/doc/?id={0}\">{1}</a></h3>";
+        var authTmp = "<p class=\"text-success\">上传者: {0}</p>";
+        var contentTmp = "<p><p class='text-secondary'>大致内容:</p> {0}</p>";
         var docTmp = document.getElementById("doc");
         var numDoc = {{.numberDoc}};
-        var docs = JSON.parse({{.docs}})
+        var docs = JSON.parse({{.docs}});
         for(let i = 0; i < numDoc; i++) {
             let titleStr = titleTmp.format(docs[i].Id, docs[i].Title);
             let authStr = authTmp.format(docs[i].Auth);
             let ContentStr = contentTmp.format(docs[i].Content);
-            docTmp.insertAdjacentHTML("beforebegin",titleStr)
-            docTmp.insertAdjacentHTML("beforebegin",authStr)
-            docTmp.insertAdjacentHTML("beforebegin",ContentStr)
-            docTmp.insertAdjacentHTML("beforebegin","<br>")
+            docTmp.insertAdjacentHTML("beforebegin",titleStr);
+            docTmp.insertAdjacentHTML("beforebegin",authStr);
+            docTmp.insertAdjacentHTML("beforebegin",ContentStr);
+            docTmp.insertAdjacentHTML("beforebegin","<br>");
         }
     </script>
     {{template "footer" }}

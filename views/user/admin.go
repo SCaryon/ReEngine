@@ -10,6 +10,7 @@ import (
 	utils "my_go/ReEngine/util"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -21,6 +22,9 @@ func Manage(r *gin.Engine, c *gin.Context)  {
 		return
 	}
 	res, err := Model.GetAllDocs()
+	for index,doc := range res {
+		res[index].Content = utils.CutString(doc.Content,0,100)
+	}
 	if err != nil {
 		log.Println(err)
 		toHomePage(c)
@@ -56,7 +60,16 @@ func SubmitDoc(r *gin.Engine, c *gin.Context) {
 	auth := form.Value["auth"]
 	files := form.File["upload_file"]
 	for _,file:=range files{
-		ok:=c.SaveUploadedFile(file,utils.DocPath+file.Filename)
+		fileName := file.Filename
+		fileTmp := fileName
+		for _,suffix := range utils.FileSuffixs {
+			if strings.HasSuffix(fileName,suffix) {
+				fileTmp = strings.TrimRight(fileName,suffix)
+				break
+			}
+		}
+		user := Model.GetUsername(c)
+		ok:=c.SaveUploadedFile(file,utils.DocPath+fileTmp+"."+user)
 		if ok!=nil{
 			fmt.Println("保存的时候出错了 ",ok)
 			c.Redirect(http.StatusFound,"/admin?upload=0")
