@@ -29,7 +29,6 @@ func SearchInvertDB(word string) (Invert,bool,error) {
 		if err != nil {
 			log.Printf("get data failed, error:[%v]\n", err.Error())
 		}
-		log.Println(id, tmpId)
 		resp.id = id
 		resp.NumDocs = tmpId
 		resp.KeyWord = word
@@ -45,7 +44,6 @@ func UpdateInvert(invert Invert) error{
 
 func InsertInvert(word string,id int) error {
 	queryStr := fmt.Sprintf("INSERT INTO %s(key_word,doc_id)VALUES (?,?)", utils.DBInvertDoc)
-	log.Printf("key_word:%s invert_index is empty,insert str:%s", word, queryStr)
 	_, err := DB.Exec(queryStr, word, utils.SliceToString([]int{id}))
 	if err != nil {
 		log.Printf("insert invert_index failed,err=%v,queryStr=%s", err, queryStr)

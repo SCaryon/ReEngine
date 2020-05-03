@@ -159,7 +159,7 @@ func EditDocument(r *gin.Engine,c *gin.Context) {
 	afterArticle.CreateTime = int(time.Now().Unix())
 	log.Printf("title:%s,auth:%s,content:%s",title,auth,content)
 	// 提交修改请求
-	newId,err := Model.UpdateDoc(docId, afterArticle)
+	newId,err := Engine.UpdateDoc(docId, afterArticle)
 	if err != nil {
 		var webStr string
 		if newId == -1 {

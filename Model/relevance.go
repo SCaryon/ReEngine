@@ -1,7 +1,7 @@
 package Model
 
 type Relevance struct {
-	*Article
+	Article
 	Weight		float64
 	TitleSegs	[]string
 	ContentSegs	[]string

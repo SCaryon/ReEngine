@@ -10,14 +10,18 @@ import (
 
 // 给拿到的docId进行相关性排序
 func RelevanceSort(docId []int,segs []string,invert map[string]int) []Model.Relevance {
-	var resp []Model.Relevance
+	var resp Model.DocSlice
 	docs,err := Model.GetDocByIds(docId)
 	if err != nil {
 		log.Fatal(err)
 	}
+	for index := range docs {
+		log.Printf("index=%d,doc id=%d,title=%s",index,docs[index].Id,docs[index].Title)
+	}
 	for _,doc := range docs {
 		tmp := Model.Relevance{}
-		tmp.Article = &doc
+		tmp.Article = doc
+
 		tmp.TitleSegs = utils.SegmentContent(tmp.Title)
 		tmp.ContentSegs = utils.SegmentContent(tmp.Content)
 		resp = append(resp,tmp)
@@ -30,12 +34,14 @@ func RelevanceSort(docId []int,segs []string,invert map[string]int) []Model.Rele
 		for _,seg := range segs {
 			numTF := getTF(seg,doc)
 			numIDF := getIDF(seg, invert, dataNum)
+			log.Printf("doc=%d,numTF=%f,numIDF=%f",doc.Id,numTF,numIDF)
 			weight += numTF*numIDF
 		}
 		resp[index].Weight = weight
+		log.Printf("doc id=%d,weight=%f",doc.Id,weight)
 	}
 	// 按权重大小对于结果进行排序
-	sort.Sort(Model.DocSlice(resp))
+	sort.Sort(resp)
 	for index,doc := range resp {
 		resp[index].Content = utils.CutString(doc.Content,0,100)
 	}
@@ -56,11 +62,8 @@ func getTF(seg string,doc Model.Relevance) float64 {
 		if it == seg {
 			times += 1
 		}
-		log.Print(seg,it,times)
-
 	}
 	res = utils.IntToFloat64(times) / utils.IntToFloat64(all)
-	log.Print(res)
 	return res
 }
 

@@ -56,19 +56,7 @@ func DeleteDoc(docId int) error {
 	return nil
 }
 
-func UpdateDoc(id int,doc Article) (int,error) {
-	// 对于修改文章的操作，先删除原有的文档，再插入新的内容
-	log.Printf("UpdateDoc %d,doc : %s",id,doc.Title)
-	err := DeleteDoc(id)
-	if err != nil {
-		return -1,err
-	}
-	newId,err := InsertDoc(doc)
-	if err != nil {
-		return newId,err
-	}
-	return newId,nil
-}
+
 
 func GetDocByIds(ids []int) ([]Article,error){
 	var resp []Article
@@ -80,22 +68,21 @@ func GetDocByIds(ids []int) ([]Article,error){
 			return nil,err
 		}
 		log.Println("queryStr",queryStr)
+		//定义变量接收查询数据
+		tmpId := 0
+		tmpTitle := ""
+		tmpAuth := ""
+		tmpContent := ""
+		tmpTime := 0
 		for rows.Next() {
-			//定义变量接收查询数据
-			tmpId := 0
-			tmpTitle := ""
-			tmpAuth := ""
-			tmpContent := ""
-			tmpTime := 0
 			err := rows.Scan(&tmpId,&tmpTitle,&tmpAuth,&tmpContent,&tmpTime)
 			if err != nil {
 				log.Printf("get data failed, error:[%v]\n", err.Error())
 			}
-			tmpArticle := Article{Id:tmpId, Auth:tmpAuth, Title:tmpTitle, Content:tmpContent, CreateTime:tmpTime}
-			// 存储分词结果
-			// todo 从redis里面拿到文章的分词的信息
-			resp = append(resp,tmpArticle)
 		}
+		tmpArticle := Article{Id:tmpId, Auth:tmpAuth, Title:tmpTitle, Content:tmpContent, CreateTime:tmpTime}
+		// todo 从redis里面拿到文章的分词的信息
+		resp = append(resp,tmpArticle)
 	}
 	return resp,nil
 }

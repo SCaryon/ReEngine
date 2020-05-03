@@ -35,7 +35,24 @@ func UpdateIndex() bool {
 	}
 	return true
 }
-
+func UpdateDoc(id int,doc Model.Article) (int,error) {
+	// 对于修改文章的操作，先删除原有的文档，再插入新的内容，然后插入倒排索引
+	log.Printf("UpdateDoc %d,doc : %s",id,doc.Title)
+	err := Model.DeleteDoc(id)
+	if err != nil {
+		return -1,err
+	}
+	newId,err := Model.InsertDoc(doc)
+	if err != nil {
+		return newId,err
+	}
+	doc.Id = newId
+	err = createInvert([]Model.Article{doc})
+	if err != nil {
+		return newId,err
+	}
+	return newId,nil
+}
 func InsertDoc(articles []Model.Article) (map[int]bool,error) {
 	deleteMap := make(map[int]bool)
 	// 将文档放入数据库
@@ -86,7 +103,7 @@ func deleteTmpDoc(deleteMap map[int]bool,articles []Model.Article) []error {
 	// 删除临时文件
 	var res []error
 	for i,article := range articles {
-		if deleteMap[i] == false {
+		if deleteMap[i] == true {
 			continue
 		}
 		docPath := fmt.Sprintf("%s%s.%s",utils.DocPath,article.Title,article.Auth)

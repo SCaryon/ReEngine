@@ -25,10 +25,12 @@
                 </li>
 
             </ul>
-            <form class="form-inline col-10" action="/s">
-                <input class="form-control mr-0 sm-6 col-6" type="text" name="content" value="{{.content}}" >
-                <input class="btn btn-primary my-2 my-sm-0" type="submit" value="搜索一下">
-            </form>
+            <div class="input-group col-10">
+                <input type="text" class="form-control mr-0 sm-6 col-6" id="content" value="{{.content}}">
+                <div class="input-group-append">
+                    <button class="btn btn-primary my-2 my-sm-0" type="button" onclick="search()">搜索一下</button>
+                </div>
+            </div>
             <div class="my-2 my-lg-0">
                 <a id="admin_button"></a>
             </div>
@@ -40,6 +42,12 @@
         document.getElementById("to_admin").innerHTML = "<a class=\"nav-link\" href=\"/admin\">ReEngine管理页面</a>"
     } else {
         document.getElementById("admin_button").innerHTML = "<a href=\"/admin/login\" class=\"btn btn-outline-primary mr-sm-2\">管理员登陆</a>"
+    }
+</script>
+<script>
+    function search() {
+        var content = document.getElementById("content").value;
+        window.location.href = "/s?content="+content+"&offset=0"
     }
 </script>
 {{end}}
