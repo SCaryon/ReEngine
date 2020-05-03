@@ -149,6 +149,7 @@ func EditDocument(r *gin.Engine,c *gin.Context) {
 			"doc_auth"		: docs[0].Auth,
 			"warn"			: warn,
 		})
+		return
 	}
 	// 创建修改之后的文章对象
 	var afterArticle Model.Article
@@ -158,12 +159,17 @@ func EditDocument(r *gin.Engine,c *gin.Context) {
 	afterArticle.CreateTime = int(time.Now().Unix())
 	log.Printf("title:%s,auth:%s,content:%s",title,auth,content)
 	// 提交修改请求
-	err := Model.UpdateDoc(docId, afterArticle)
+	newId,err := Model.UpdateDoc(docId, afterArticle)
 	if err != nil {
-		webStr := fmt.Sprintf("/s/doc/?id=%d",docId)
+		var webStr string
+		if newId == -1 {
+			webStr = fmt.Sprintf("/admin/doc_edit/?doc_id=%d&&status=1",docId)
+		} else {
+			webStr = fmt.Sprintf("/admin/doc_edit/?doc_id=%d&&status=1",newId)
+		}
 		c.Redirect(http.StatusFound,webStr)
 	}
-	webStr := fmt.Sprintf("/admin/doc_edit/?doc_id=%d&&status=1",docId)
+	webStr := fmt.Sprintf("/s/doc/?id=%d",newId)
 	c.Redirect(http.StatusFound,webStr)
 
 }

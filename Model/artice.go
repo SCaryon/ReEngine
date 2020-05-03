@@ -56,18 +56,18 @@ func DeleteDoc(docId int) error {
 	return nil
 }
 
-func UpdateDoc(id int,doc Article) error {
+func UpdateDoc(id int,doc Article) (int,error) {
 	// 对于修改文章的操作，先删除原有的文档，再插入新的内容
 	log.Printf("UpdateDoc %d,doc : %s",id,doc.Title)
 	err := DeleteDoc(id)
 	if err != nil {
-		return err
+		return -1,err
 	}
-	_,err = InsertDoc(doc)
+	newId,err := InsertDoc(doc)
 	if err != nil {
-		return err
+		return newId,err
 	}
-	return nil
+	return newId,nil
 }
 
 func GetDocByIds(ids []int) ([]Article,error){

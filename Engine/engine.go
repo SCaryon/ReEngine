@@ -89,7 +89,7 @@ func deleteTmpDoc(deleteMap map[int]bool,articles []Model.Article) []error {
 		if deleteMap[i] == false {
 			continue
 		}
-		docPath := fmt.Sprintf("%s%s",utils.DocPath,article.Title)
+		docPath := fmt.Sprintf("%s%s.%s",utils.DocPath,article.Title,article.Auth)
 		err := os.Remove(docPath)
 		if err != nil {
 			log.Printf("%s delete failed,err=%s",docPath,err)
