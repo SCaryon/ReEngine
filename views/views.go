@@ -19,10 +19,14 @@ func InitRoutes(r *gin.Engine) {
 		key := c.Keys[utils.IsLogin]
 		c.HTML(http.StatusOK, "test.html",gin.H{
 			"login"		: key,
+			"title"		: "content",
+			"content"	: "content",
+			"numberDoc"	: 21,
+			"offset"	: 2,
 		})
 	})
 
-	// homepage
+	// 首页
 	r.Any("/",func(c *gin.Context) {
 		key := c.Keys[utils.IsLogin]
 		log.Printf("log status:%v",key)

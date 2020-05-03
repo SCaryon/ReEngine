@@ -76,6 +76,9 @@ func SearchContent(r *gin.Engine, c *gin.Context) {
 		offsetTmp = 0
 	}
 	downIndex := offsetTmp * utils.DocPageLimit
+	if downIndex >= len(docs) {
+		downIndex = 0
+	}
 	upIndex := utils.Min(len(docs), downIndex+utils.DocPageLimit)
 	docJson, _ := json.Marshal(docs[downIndex:upIndex])
 	log.Println(downIndex,upIndex)
@@ -85,6 +88,7 @@ func SearchContent(r *gin.Engine, c *gin.Context) {
 		"docs"		: string(docJson),
 		"numberDoc"	: len(docs),
 		"login"		: key,
+		"pageNum"	: offsetTmp+1,
 	})
 }
 

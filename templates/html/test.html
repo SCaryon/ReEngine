@@ -1,85 +1,86 @@
 {{define "test.html"}}
     {{template "no-index-header" .}}
-    <link rel="stylesheet" href="../../static/editor.md/css/editormd.css" />
-    <br>
-    <div class="row">
-        <div class="col-md-4 m-auto col-sm-3">
-            <div class="input-group mb-3 input-group-lg">
-                <div class="input-group-prepend">
-                    <span class="input-group-text">标题</span>
-                </div>
-                <input type="text" id="doc_title" class="form-control" required>
+    <div class="container-fluid">
+        <div class="row">
+            <!--显示文档信息-->
+            <div class="col-md-8 ">
+                <br>
+                <div class="text-secondary">为您找到相关结果：{{.numberDoc}} 篇相关文档</div>
+                <br>
+                <div id="doc"></div>
+                <!--js根据参数在指定位置插入html-->
+                <nav >
+                    <ul class="pagination pagination justify-content-center">
+                        <div id="pagination"></div>
+                    </ul>
+                </nav>
+            </div>
+
+            <div class="col-md-4 ant-divider-vertical">
+                <!--侧边栏放什么还没想好-->
             </div>
         </div>
     </div>
-    <div class="row">
-        <div class="col-md-2 m-auto col-sm-1">
-            <div class="input-group mb-3">
-                <div class="input-group-prepend">
-                    <span class="input-group-text">上传人</span>
-                </div>
-                <input type="text" id="doc_auth" class="form-control" required>
-                <div class="input-group-append col-sm-1">
-                    <button class="btn btn-primary btn-doc-submit">提交更改</button>
-                </div>
-            </div>
-
-        </div>
-    </div>
-
-    <div id="doc-editor">
-        <textarea class="editormd-markdown-textarea" name="$id-markdown-doc"></textarea>
-        <textarea style="display:none;">### 关于 Editor.md
-
-**Editor.md** 是一款开源的、可嵌入的 Markdown 在线编辑器（组件），基于 CodeMirror、jQuery 和 Marked 构建。
-            </textarea>
-    </div>
-
-    <script src="../../static/jQuery/jquery-3.4.1.min.js"></script>
-    <script src="../../static/editor.md/editormd.min.js"></script>
-    <script type="text/javascript">
-        var editor
-        $(function() {
-            editor = editormd("doc-editor", {
-                width       : "100%",
-                height      : "800px",
-                path        : "../../static/editor.md/lib/",
-                tocm        : true, // Using [TOCM]
-                tex         : true, // 开启科学公式TeX语言支持，默认关闭
-                flowChart   : true, // 开启流程图支持，默认关闭
-            });
-        });
-
-        // 提交编辑之后的文章信息
-        $('.btn-doc-submit').click(function() {
-            let title = document.getElementById("doc_title").value;
-            let auth = document.getElementById("doc_auth").value;
-            let md = editor.getMarkdown();
-            let form = document.createElement("form");
-            form.action = "/admin/doc_edit?doc_id={{.doc_id}}";
-            form.method = "post";
-            form.style.display = "none";
-
-            let inputTitle = document.createElement("textarea");
-            let inputAuth = document.createElement("textarea");
-            let inputContent = document.createElement("textarea");
-
-            inputTitle.name = "title";
-            inputTitle.value = title;
-
-            inputAuth.name = "auth";
-            inputAuth.value = auth;
-
-            inputContent.name = "content";
-            inputContent.value = md;
-
-            form.appendChild(inputTitle);
-            form.appendChild(inputAuth);
-            form.appendChild(inputContent);
-
-            document.body.appendChild(form)
-            form.submit()
-        });
+    <script>
+        String.prototype.format = function(args) {
+            var result = this;
+            if (arguments.length > 0) {
+                if (arguments.length == 1 && typeof (args) == "object") {
+                    for (var key in args) {
+                        if(args[key]!=undefined){
+                            var reg = new RegExp("({" + key + "})", "g");
+                            result = result.replace(reg, args[key]);
+                        }
+                    }
+                }
+                else {
+                    for (var i = 0; i < arguments.length; i++) {
+                        if (arguments[i] != undefined) {
+                            var reg= new RegExp("({)" + i + "(})", "g");
+                            result = result.replace(reg, arguments[i]);
+                        }
+                    }
+                }
+            }
+            return result;
+        };
+        var titleTmp = "<h3><a href=\"/s/doc/?id={0}\">{1}</a></h3>";
+        var authTmp = "<p class=\"text-success\">上传者: {0}</p>";
+        var contentTmp = "<p><p class='text-secondary'>大致内容:</p> {0}</p>";
+        var docTmp = document.getElementById("doc");
+        var numDoc = {{.numberDoc}};
+        var docs = JSON.parse({{.docs}});
+        for(let i = 0; i < numDoc; i++) {
+            let titleStr = titleTmp.format(docs[i].Id, docs[i].Title);
+            let authStr = authTmp.format(docs[i].Auth);
+            let ContentStr = contentTmp.format(docs[i].Content);
+            docTmp.insertAdjacentHTML("beforebegin",titleStr);
+            docTmp.insertAdjacentHTML("beforebegin",authStr);
+            docTmp.insertAdjacentHTML("beforebegin",ContentStr);
+            docTmp.insertAdjacentHTML("beforebegin","<br>");
+        }
+    </script>
+    <script>
+        let pagination = document.getElementById("pagination");
+        let index = {{.offset}};
+        let numPage = Math.ceil(numDoc/10);
+        console.log(numPage)
+        let currenPagination = "<li class=\"page-item active\" aria-current=\"page\"> <span class=\"page-link\">{0}<span class=\"sr-only\">(current)</span></span></li>";
+        let otherPagination = "<li class=\"page-item\"><a class=\"page-link\" href=\"{0}\">{1}</a></li>";
+        let href;
+        for (let i = 1; i <= numPage; i++) {
+            if (i === index) {
+                let current = currenPagination.format(i);
+                console.log(current)
+                pagination.insertAdjacentHTML("beforebegin", current);
+            } else {
+                let searchContent = {{.content}} ;
+                href = "/s/?content=" + searchContent + "&offset=" + i;
+                let other = otherPagination.format(href, i);
+                console.log(other)
+                pagination.insertAdjacentHTML("beforebegin", other);
+            }
+        }
     </script>
     {{template "footer" }}
 {{end}}
