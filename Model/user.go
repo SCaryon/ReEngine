@@ -23,6 +23,7 @@ func CheckPassWord(name, password string) (bool,string) {
 		log.Printf("db query failed,str=%s,%s",queryStr,err)
 		check = false
 		warning = "网站打瞌睡了，请稍后再试"
+		return check,warning
 	}
 	for rows.Next() {
 		_ = rows.Scan(&passwordTmp)

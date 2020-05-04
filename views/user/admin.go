@@ -62,7 +62,7 @@ func SubmitDoc(r *gin.Engine, c *gin.Context) {
 	for _,file:=range files{
 		fileName := file.Filename
 		fileTmp := fileName
-		for _,suffix := range utils.FileSuffixs {
+		for _,suffix := range utils.FileSuffixes {
 			if strings.HasSuffix(fileName,suffix) {
 				fileTmp = strings.TrimRight(fileName,suffix)
 				break

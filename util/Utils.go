@@ -24,7 +24,7 @@ const (
 	UpdateIndexSpec = "0 0 3 * * ?"           // 更新索引的定时任务参数，每天3天开始更新
 
 )
-var FileSuffixs	= []string{".md",".txt",".pdf"}
+var FileSuffixes = []string{".md",".txt",".pdf"}
 
 func StringToSlice(context string) []int {
 	var resp = make([]int,0)
@@ -44,6 +44,16 @@ func SliceToString(context []int) string {
 }
 
 func GetFileCreateTime(file os.FileInfo) int {
+	/*
+	osType := runtime.GOOS
+	if osType == "windows" {
+		wFileSys := file.Sys().(*syscall.Win32FileAttributeData)
+		tNanSeconds := wFileSys.CreationTime.Nanoseconds()  /// 返回的是纳秒
+		tSec := tNanSeconds/1e9                             ///秒
+		return int(tSec)
+	} else {
+		return 0
+	}*/
 	statT := file.Sys().(*syscall.Stat_t)
 	tCreate := statT.Ctimespec.Sec
 	return int(tCreate)

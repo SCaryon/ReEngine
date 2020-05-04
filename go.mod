@@ -8,6 +8,7 @@ require (
 	github.com/gin-gonic/gin v1.6.3
 	github.com/go-sql-driver/mysql v1.5.0
 	github.com/huichen/sego v0.0.0-20180617034105-3f3c8a8cfacc
+	github.com/issue9/assert v1.3.4 // indirect
 	github.com/json-iterator/go v1.1.9
 	github.com/pkg/errors v0.9.1
 	github.com/robfig/cron v1.2.0
