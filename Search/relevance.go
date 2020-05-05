@@ -15,9 +15,6 @@ func RelevanceSort(docId []int,segs []string,invert map[string]int) []Model.Rele
 	if err != nil {
 		log.Fatal(err)
 	}
-	for index := range docs {
-		log.Printf("index=%d,doc id=%d,title=%s",index,docs[index].Id,docs[index].Title)
-	}
 	for _,doc := range docs {
 		tmp := Model.Relevance{}
 		tmp.Article = doc
@@ -34,11 +31,9 @@ func RelevanceSort(docId []int,segs []string,invert map[string]int) []Model.Rele
 		for _,seg := range segs {
 			numTF := getTF(seg,doc)
 			numIDF := getIDF(seg, invert, dataNum)
-			log.Printf("doc=%d,numTF=%f,numIDF=%f",doc.Id,numTF,numIDF)
 			weight += numTF*numIDF
 		}
 		resp[index].Weight = weight
-		log.Printf("doc id=%d,weight=%f",doc.Id,weight)
 	}
 	// 按权重大小对于结果进行排序
 	sort.Sort(resp)

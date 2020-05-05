@@ -26,7 +26,7 @@ func GetAllDocs() ([]Article,error) {
 		log.Printf("use %s table ,query = %s failed\n",utils.DBDocument,queryStr)
 		return nil,err
 	}
-	log.Println("queryStr",queryStr)
+	//log.Println("queryStr",queryStr)
 	for rows.Next() {
 		//定义变量接收查询数据
 		tmpId := 0
@@ -67,7 +67,7 @@ func GetDocByIds(ids []int) ([]Article,error){
 			log.Printf("use %s table ,query = %s failed\n",utils.DBDocument,queryStr)
 			return nil,err
 		}
-		log.Println("queryStr",queryStr)
+		//log.Println("queryStr",queryStr)
 		//定义变量接收查询数据
 		tmpId := 0
 		tmpTitle := ""
@@ -111,7 +111,7 @@ func CountDocs() (int,error) {
 func GetAndReadFiles(filePath string) []Article {
 	var articles []Article
 	goPath := os.Getenv("GOPATH")
-	path := fmt.Sprintf("%s/src/ReEngine/%s", goPath, filePath)
+	path := fmt.Sprintf("%s/src/my_go/ReEngine/%s", goPath, filePath)
 	files, err := ioutil.ReadDir(path)
 	if err != nil {
 		panic(err)

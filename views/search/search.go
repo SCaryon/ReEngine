@@ -42,8 +42,8 @@ func SearchContent(r *gin.Engine, c *gin.Context) {
 	}
 	var docs []Model.Relevance
 	log.Printf("search content:%s",content)
-	// todo redis缓存搜索数据，分页用 还未测试
 	tmpRes,err := utils.BigCache.Get(content)
+	//err = errors.New("benchmark use")
 	if  err == nil && tmpRes != nil {
 		_ =json.Unmarshal(tmpRes,&docs)
 		log.Printf("search %s,use bigcache",content)
@@ -81,7 +81,6 @@ func SearchContent(r *gin.Engine, c *gin.Context) {
 	}
 	upIndex := utils.Min(len(docs), downIndex+utils.DocPageLimit)
 	docJson, _ := json.Marshal(docs[downIndex:upIndex])
-	log.Println(downIndex,upIndex)
 	c.HTML(http.StatusOK,"search.html",gin.H{
 		"title"		: content,
 		"content"	: content,

@@ -5,7 +5,10 @@ import (
 	"ReEngine/Model"
 	utils "ReEngine/util"
 	"ReEngine/views"
+	"github.com/DeanThompson/ginpprof"
+	_ "github.com/DeanThompson/ginpprof"
 	"github.com/gin-gonic/gin"
+	_ "net/http/pprof"
 )
 
 func main(){
@@ -36,6 +39,7 @@ func main(){
 	// 添加定时任务:更新索引表
 	Engine.CreateCron()
 	defer Engine.CronUpdateIndex.Stop()
-
+	// 使用net/http/pprof
+	ginpprof.Wrapper(r)
 	r.Run()
 }

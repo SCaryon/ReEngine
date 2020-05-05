@@ -24,7 +24,7 @@ func UpdateIndex() bool {
 		log.Fatal(err)
 		return false
 	}
-	err = createInvert(articles)
+	err = CreateInvert(articles)
 	if err != nil {
 		log.Fatal(err)
 		return false
@@ -47,7 +47,7 @@ func UpdateDoc(id int,doc Model.Article) (int,error) {
 		return newId,err
 	}
 	doc.Id = newId
-	err = createInvert([]Model.Article{doc})
+	err = CreateInvert([]Model.Article{doc})
 	if err != nil {
 		return newId,err
 	}
@@ -69,7 +69,7 @@ func InsertDoc(articles []Model.Article) (map[int]bool,error) {
 	return deleteMap,nil
 }
 
-func createInvert(articles []Model.Article) error{
+func CreateInvert(articles []Model.Article) error{
 	// 创建倒排索引
 	for _,article := range articles {
 		dictWord := make(map[string] bool)
