@@ -30,17 +30,17 @@ func RelevanceSort(docId []int,segs []string,invert map[string]int) []Model.Rele
 			_ = Model.RedisSet(titleKey, tmpSeg)
 			tmp.TitleSegs = tmpSeg
 		} else {
-			log.Printf("Get doc Title Seg use Redis,key:%s",titleKey)
 			tmp.TitleSegs = res
 		}
 		contentKey := fmt.Sprintf(utils.RedisDocContentSeg,doc.Id)
 		res,err =  Model.RedisGet(contentKey)
 		if err != nil {
 			tmpSeg := utils.SegmentContent(tmp.Content)
+			//log.Printf("Get doc Content Seg no use Redis,key:%s",contentKey)
 			_ = Model.RedisSet(contentKey, tmpSeg)
 			tmp.ContentSegs = tmpSeg
 		} else {
-			log.Printf("Get doc Content Seg use Redis,key:%s",contentKey)
+			//log.Printf("Get doc Content Seg use Redis,key:%s",contentKey)
 			tmp.ContentSegs = res
 		}
 		resp = append(resp,tmp)

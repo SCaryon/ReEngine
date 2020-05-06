@@ -29,7 +29,6 @@ func main(){
 	defer Model.DB.Close()
 	// 初始化Redis
 	Model.InitRedis()
-	defer Model.Connect.Close()
 	// 初始化分词器
 	utils.InitSegment(utils.DictionaryPath)
 	// 加载停用词

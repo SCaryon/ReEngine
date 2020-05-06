@@ -2,6 +2,7 @@ package Model
 
 import (
 	utils "ReEngine/util"
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -40,7 +41,6 @@ func GetAllDocs() ([]Article,error) {
 		}
 		tmpArticle := Article{Id:tmpId, Auth:tmpAuth, Title:tmpTitle, Content:tmpContent, CreateTime:tmpTime}
 		// 存储分词结果
-		// todo 从redis里面拿到文章的分词的信息
 		resp = append(resp,tmpArticle)
 	}
 	return  resp,nil
@@ -61,6 +61,18 @@ func DeleteDoc(docId int) error {
 func GetDocByIds(ids []int) ([]Article,error){
 	var resp []Article
 	for _,id := range ids {
+		tmpJson,err := utils.BigCache.Get(fmt.Sprintf(utils.CacheDocContent,id))
+		if  err == nil{
+			var tmpArticle Article
+			err = json.Unmarshal(tmpJson,&tmpArticle)
+			if err != nil {
+				log.Printf("use big cache get doc failed,err=%s",err)
+			} else {
+				//log.Printf("use big cache,get doc,id=%d",tmpArticle.Id)
+				resp = append(resp, tmpArticle)
+				continue
+			}
+		}
 		queryStr := fmt.Sprintf("select id,title,auth,context,create_time from %s where id=%d and is_delete=0",utils.DBDocument,id)
 		rows,err := DB.Query(queryStr)
 		if err != nil || rows == nil {
@@ -83,6 +95,10 @@ func GetDocByIds(ids []int) ([]Article,error){
 		// 过滤已经被删除的文档
 		if tmpId != 0 {
 			tmpArticle := Article{Id:tmpId, Auth:tmpAuth, Title:tmpTitle, Content:tmpContent, CreateTime:tmpTime}
+			jsonArticle,err := json.Marshal(tmpArticle)
+			if err == nil {
+				utils.BigCache.Set(fmt.Sprintf(utils.CacheDocContent,tmpId),jsonArticle)
+			}
 			resp = append(resp,tmpArticle)
 		}
 	}

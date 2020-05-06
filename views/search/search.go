@@ -4,6 +4,7 @@ import (
 	"ReEngine/Model"
 	"ReEngine/Search"
 	utils "ReEngine/util"
+	"errors"
 	"github.com/gin-gonic/gin"
 	json "github.com/json-iterator/go"
 	"log"
@@ -43,7 +44,7 @@ func SearchContent(r *gin.Engine, c *gin.Context) {
 	var docs []Model.Relevance
 	log.Printf("search content:%s",content)
 	tmpRes,err := utils.BigCache.Get(content)
-	//err = errors.New("benchmark use")
+	err = errors.New("benchmark use")
 	if  err == nil && tmpRes != nil {
 		_ =json.Unmarshal(tmpRes,&docs)
 		log.Printf("search %s,use bigcache",content)

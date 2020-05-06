@@ -29,7 +29,7 @@ func InitDB() {
 		log.Println("connect to mysql success")
 	}
 	//设置数据库最大连接数
-	DB.SetConnMaxLifetime(1000)
+	DB.SetConnMaxLifetime(2000)
 	//设置上数据库最大闲置连接数
 	DB.SetMaxIdleConns(10)
 	//验证连接

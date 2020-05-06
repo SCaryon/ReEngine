@@ -5,19 +5,24 @@ import (
 	"github.com/garyburd/redigo/redis"
 	"log"
 )
-var Connect redis.Conn
+var pool *redis.Pool
 func InitRedis() {
-	conn,err := redis.Dial("tcp","127.0.0.1:6379")
-	if err != nil {
-		log.Fatal("redis init failed")
-		return
+	pool = &redis.Pool{
+		MaxIdle:     10,
+		MaxActive:   0,
+		Wait: true,
+		IdleTimeout: 300,
+		Dial: func() (redis.Conn, error) {
+			return redis.Dial("tcp", "localhost:6379")
+		},
 	}
-	Connect = conn
 }
 
 func RedisSet(key string,value []string) error {
+	connect := pool.Get()
+	defer connect.Close()
 	for _,str := range value {
-		_, err := Connect.Do("rpush", key, str)
+		_, err := connect.Do("rpush", key, str)
 		if err != nil {
 			log.Fatal(str," err ",err)
 			return err
@@ -27,7 +32,9 @@ func RedisSet(key string,value []string) error {
 }
 
 func RedisGet(key string) ([]string,error) {
-	value, err := redis.Strings(Connect.Do("lrange", key, "0", "-1"))
+	connect := pool.Get()
+	defer connect.Close()
+	value, err := redis.Strings(connect.Do("lrange", key, "0", "-1"))
 	if len(value) == 0 {
 		return nil,errors.New("redis is empty")
 	}

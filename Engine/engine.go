@@ -3,6 +3,7 @@ package Engine
 import (
 	"ReEngine/Model"
 	utils "ReEngine/util"
+	"encoding/json"
 	"fmt"
 	"log"
 	"os"
@@ -48,8 +49,12 @@ func UpdateDoc(id int,doc Model.Article) (int,error) {
 	}
 	doc.Id = newId
 	err = CreateInvert([]Model.Article{doc})
-
-	// 为了保证redis的数据一致性
+	// 保证Cache数据一致性
+	jsonDoc,err := json.Marshal(doc)
+	if err == nil {
+		utils.BigCache.Set(fmt.Sprintf(utils.CacheDocContent,newId),jsonDoc)
+	}
+	// 保证redis的数据一致性
 	titleKey := fmt.Sprintf(utils.RedisDoctitleSeg,doc.Id)
 	tmpSeg := utils.SegmentContent(doc.Title)
 	_ = Model.RedisSet(titleKey, tmpSeg)

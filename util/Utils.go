@@ -24,7 +24,7 @@ const (
 	UpdateIndexSpec 	= "0 0 3 * * ?"           // 更新索引的定时任务参数，每天3天开始更新
 	RedisDoctitleSeg	= "Doc:%d,SegmentTitle"	  // Redis存储的文档标题分词的key
 	RedisDocContentSeg	= "Doc:%d,SegmentContent" // Redis存储的文档内容分词的key
-
+	CacheDocContent		= "Doc%d,Content"		  // Cache存储的文档信息
 )
 var FileSuffixes = []string{".md",".txt",".pdf"}
 

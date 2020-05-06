@@ -16,6 +16,8 @@ func BenchmarkSearchContent(b *testing.B) {
 	goPath := os.Getenv("GOPATH")
 	path := fmt.Sprintf("%s/src/my_go/ReEngine/%s",goPath,utils.DictionaryPath)
 	Model.InitDB()
+	Model.InitRedis()
+	utils.InitCache()
 	utils.InitSegment(path)
 	path = fmt.Sprintf("%s/src/my_go/ReEngine/%s",goPath,utils.StopWordPath)
 	err := utils.LoadStopWord(path)
