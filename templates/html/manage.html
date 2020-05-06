@@ -10,7 +10,11 @@
                 <br>
                 <div id="doc"></div>
                 <!--js根据参数在指定位置插入html-->
-
+                <nav >
+                    <ul class="pagination pagination justify-content-center">
+                        <div id="pagination"></div>
+                    </ul>
+                </nav>
             </div>
 
             <div class="col-md-4 ant-divider-vertical">
@@ -102,6 +106,28 @@
             docTmp.insertAdjacentHTML("beforebegin",authStr);
             docTmp.insertAdjacentHTML("beforebegin",ContentStr);
             docTmp.insertAdjacentHTML("beforebegin","<br>");
+        }
+    </script>
+    <script>
+        let pagination = document.getElementById("pagination");
+        let index = {{.pageNum}};
+        let numPage = Math.ceil(numDoc/10);
+        console.log(numPage)
+        let currenPagination = "<li class=\"page-item active\" aria-current=\"page\"> <span class=\"page-link\">{0}<span class=\"sr-only\">(current)</span></span></li>";
+        let otherPagination = "<li class=\"page-item\"><a class=\"page-link\" href=\"{0}\">{1}</a></li>";
+        let href;
+        for (let i = 1; i <= numPage; i++) {
+            if (i === index) {
+                let current = currenPagination.format(i);
+                console.log(current)
+                pagination.insertAdjacentHTML("beforebegin", current);
+            } else {
+                let searchContent = {{.content}} ;
+                href = "/admin/?&offset=" + (i-1);
+                let other = otherPagination.format(href, i);
+                console.log(other)
+                pagination.insertAdjacentHTML("beforebegin", other);
+            }
         }
     </script>
 {{end}}

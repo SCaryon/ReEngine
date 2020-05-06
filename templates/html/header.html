@@ -34,7 +34,7 @@
     <script>
         if ( {{.login}}) {
             document.getElementById("admin_button").innerHTML = "<a href=\"/admin/logout\" class=\"btn btn-outline-primary mr-sm-2\">登出</a>"
-            document.getElementById("to_admin").innerHTML = "<a class=\"nav-link\" href=\"/admin\">ReEngine管理页面</a>"
+            document.getElementById("to_admin").innerHTML = "<a class=\"nav-link\" href=\"/admin?offset=0\">ReEngine管理页面</a>"
         } else {
             document.getElementById("admin_button").innerHTML = "<a href=\"/admin/login\" class=\"btn btn-outline-primary mr-sm-2\">管理员登陆</a>"
         }

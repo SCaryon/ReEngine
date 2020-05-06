@@ -21,25 +21,38 @@ func Manage(r *gin.Engine, c *gin.Context)  {
 		toHomePage(c)
 		return
 	}
-	res, err := Model.GetAllDocs()
-	for index,doc := range res {
-		res[index].Content = utils.CutString(doc.Content,0,100)
+	offset := c.Query("offset")
+	docs, err := Model.GetAllDocs()
+	for index,doc := range docs {
+		docs[index].Content = utils.CutString(doc.Content,0,100)
 	}
 	if err != nil {
 		log.Println(err)
 		toHomePage(c)
 	} else {
-		docJson, _ := json.Marshal(res)
-		log.Println("docjson : ",string(docJson))
+		// 分页
+		offsetTmp,err := strconv.Atoi(offset)
+		if err != nil {
+			// 非法参数
+			log.Println("get offset failed",err)
+			offsetTmp = 0
+		}
+		downIndex := offsetTmp * utils.DocPageLimit
+		if downIndex >= len(docs) {
+			downIndex = 0
+		}
+		upIndex := utils.Min(len(docs), downIndex+utils.DocPageLimit)
+		docJson, _ := json.Marshal(docs[downIndex:upIndex])
 		username := Model.GetUsername(c)
 		c.HTML(http.StatusOK,"manage.html",gin.H{
 			"username"	:	username,
 			"login"		: key,
-			"numberDoc"	: len(res),
+			"numberDoc"	: len(docs),
 			"docs"		: string(docJson),
 			"upload"	: c.Query("upload"),
 			"index"		: c.Query("index"),
 			"regSucc"	: c.Query("regSucc"),
+			"pageNum"	: offsetTmp+1,
 		})
 	}
 }
