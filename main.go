@@ -24,11 +24,14 @@ func main(){
 	r.LoadHTMLGlob("templates/**/*")
 	// 加载静态资源
 	r.Static("/static", "./static")
-	// 初始化分词器
-	utils.InitSegment(utils.DictionaryPath)
 	// 初始化数据库
 	Model.InitDB()
 	defer Model.DB.Close()
+	// 初始化Redis
+	Model.InitRedis()
+	defer Model.Connect.Close()
+	// 初始化分词器
+	utils.InitSegment(utils.DictionaryPath)
 	// 加载停用词
 	utils.LoadStopWord(utils.StopWordPath)
 	// 初始化Cache

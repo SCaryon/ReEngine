@@ -3,6 +3,7 @@ package Search
 import (
 	"ReEngine/Model"
 	"ReEngine/util"
+	"fmt"
 	"log"
 	"math"
 	"sort"
@@ -16,11 +17,32 @@ func RelevanceSort(docId []int,segs []string,invert map[string]int) []Model.Rele
 		log.Fatal(err)
 	}
 	for _,doc := range docs {
+		if doc.Content == "" && doc.Title == "" {
+			continue
+		}
 		tmp := Model.Relevance{}
 		tmp.Article = doc
-
-		tmp.TitleSegs = utils.SegmentContent(tmp.Title)
-		tmp.ContentSegs = utils.SegmentContent(tmp.Content)
+		// 优先从redis里面拿到分词
+		titleKey := fmt.Sprintf(utils.RedisDoctitleSeg,doc.Id)
+		res,err :=  Model.RedisGet(titleKey)
+		if err != nil {
+			tmpSeg := utils.SegmentContent(tmp.Title)
+			_ = Model.RedisSet(titleKey, tmpSeg)
+			tmp.TitleSegs = tmpSeg
+		} else {
+			log.Printf("Get doc Title Seg use Redis,key:%s",titleKey)
+			tmp.TitleSegs = res
+		}
+		contentKey := fmt.Sprintf(utils.RedisDocContentSeg,doc.Id)
+		res,err =  Model.RedisGet(contentKey)
+		if err != nil {
+			tmpSeg := utils.SegmentContent(tmp.Content)
+			_ = Model.RedisSet(contentKey, tmpSeg)
+			tmp.ContentSegs = tmpSeg
+		} else {
+			log.Printf("Get doc Content Seg use Redis,key:%s",contentKey)
+			tmp.ContentSegs = res
+		}
 		resp = append(resp,tmp)
 	}
 	dataNum, _ := Model.CountDocs()

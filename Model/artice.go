@@ -83,7 +83,6 @@ func GetDocByIds(ids []int) ([]Article,error){
 		// 过滤已经被删除的文档
 		if tmpId != 0 {
 			tmpArticle := Article{Id:tmpId, Auth:tmpAuth, Title:tmpTitle, Content:tmpContent, CreateTime:tmpTime}
-			// todo 从redis里面拿到文章的分词的信息
 			resp = append(resp,tmpArticle)
 		}
 	}

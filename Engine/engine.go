@@ -48,6 +48,15 @@ func UpdateDoc(id int,doc Model.Article) (int,error) {
 	}
 	doc.Id = newId
 	err = CreateInvert([]Model.Article{doc})
+
+	// 为了保证redis的数据一致性
+	titleKey := fmt.Sprintf(utils.RedisDoctitleSeg,doc.Id)
+	tmpSeg := utils.SegmentContent(doc.Title)
+	_ = Model.RedisSet(titleKey, tmpSeg)
+	contentKey := fmt.Sprintf(utils.RedisDocContentSeg,doc.Id)
+	tmpSeg = utils.SegmentContent(doc.Content)
+	_ = Model.RedisSet(contentKey, tmpSeg)
+
 	if err != nil {
 		return newId,err
 	}

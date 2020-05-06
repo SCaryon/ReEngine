@@ -7,6 +7,7 @@ require (
 	github.com/adamzy/cedar-go v0.0.0-20170805034717-80a9c64b256d // indirect
 	github.com/allegro/bigcache v1.2.1
 	github.com/fatih/color v1.9.0 // indirect
+	github.com/garyburd/redigo v1.6.0
 	github.com/gin-gonic/gin v1.6.3
 	github.com/go-sql-driver/mysql v1.5.0
 	github.com/huichen/sego v0.0.0-20180617034105-3f3c8a8cfacc
